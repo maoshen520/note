@@ -5,12 +5,11 @@
             <el-space :size="20">
 
                 <!-- 头像 -->
-                <el-popover placement="bottom" title="用户内容" :width="300" trigger="hover"
-                    content="this is content, this is content, this is content">
+                <el-popover v-if="userId !== null" placement="bottom" :width="300" trigger="hover">
                     <template #reference>
                         <!-- <el-avatar :size="32" :icon="UserFilled"/> -->
                         <el-avatar shape="circle" fit="fill" :size="32"
-                            src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+                            :src="headImage"
                             style="cursor: pointer;" />
                     </template>
                     <div style="width: 300px;cursor: pointer;">
@@ -23,7 +22,7 @@
                 </el-popover>
 
                 <!-- 分割线 -->
-                <el-divider direction="vertical" />
+                <el-divider v-if="userId !== null" direction="vertical" />
 
                 <!-- 消息 -->
                 <el-badge is-dot class="item">
@@ -41,13 +40,24 @@
 </template>
 
 <script setup>
+    import{ref} from 'vue';
     import { Bell } from '@element-plus/icons-vue';  //图标
-    
+
+    import {storeToRefs} from "pinia"
     import { userLoginModalStore } from '@/stores/LoginModalStore.js';
+    import {useUserStore} from "@/stores/userStore.js"
+
     // 登录模态框共享资源的对象
     const loginModalStore = userLoginModalStore();
     // 改变登录模态框显示的状态
     const {changeLoginModalShowStatus} = loginModalStore;
+
+    // 用户的共享数据对象
+    const userStore = useUserStore();
+    const {id:userId,headImage} = storeToRefs(userStore);
+    // const headImage = ref('')
+    // const {headImage} = storeToRefs(userStore);
+    console.log(userId,headImage)
 
 </script>
 

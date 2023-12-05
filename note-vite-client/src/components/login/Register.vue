@@ -114,10 +114,7 @@
     const registerBtn = (formEl) => {
         if (!formEl) return
         formEl.validate( async (valid) => {
-            console.log(valid);
             if (valid) {
-                console.log('点击注册表单验证成功')
-
                 //是否获取验证码
                 if(emailVckey.value === '' || emailVckey === null){
                     ElMessage({
@@ -154,17 +151,16 @@
                     })
                     setTimeout(() => {
                         registerBtnDisabled.value = false;  //解除禁用注册按钮
-                    })
+                    },2000)
                     throw '注册请求失败';
                 })
 
-                console.log('注册 ==>',responseData);
                 if(responseData.success){
                     ElMessage({
                         message: responseData.message,
                         type: 'success'
                     })
-                    emits('changeStep',1)
+                    emits('changeStep',3)
                 }else{
                     ElMessage({
                         message: responseData.message,
@@ -172,10 +168,9 @@
                     })
                     setTimeout(() => {
                         registerBtnDisabled.value = false;  //解除禁用注册按钮
-                    })
+                    },2000)
                 }
             } else {
-                console.log('error submit!')
                 return false
             }
         })
@@ -233,23 +228,21 @@
                     return false;
                 })
 
-                console.log('邮箱注册码',responseData);
                 let mseeageType;
                 if(responseData.success){
                     mseeageType = 'success';
                     emailVckey.value = responseData.data;
                 }else{
                     mseeageType = 'error';
+                    resetButtonCountDownStatus();
                 }
                 ElMessage({
                     message: responseData.message,
                     type: mseeageType
                 })
+            }else {
+                return false
             }
-            //  else {
-            //     console.log('error submit!')
-            //     return false
-            // }
         })
     }
 

@@ -58,25 +58,14 @@ import HelloWorld from './components/HelloWorld.vue'
 	import LoginModal from '@/components/login/LoginModal.vue'
 
 	onMounted(() => {
-		// request()
+
+		// 监听本地存储是否发生变化
+		// window.addEventListener('storage', event => {
+		// 	// console.log(event)
+		// 	// 如果发生改变，event.key就是改变的
+		// 	// event.newValue就是新值
+		// })
 	})
-
-	const request = async () => {
-		const { data: responseData } = await noteBaseRequest.post(
-			'/user/login/email/password',
-			{
-				email: '315105654@qq.com',
-				password: 'eVF4TJ'
-			}
-
-		).catch(() => {
-			throw '发送登录请求失败'
-		})
-		console.log(responseData)
-	}
-
-
-
 </script>
 
 <style lang="less" scoped>

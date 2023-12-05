@@ -39,14 +39,14 @@
                 </el-form-item> 
 
                 <el-form-item prop="trim">
-                    <el-checkbox v-model="loginFormValue.trim" style="color: #000;">同意本公司的</el-checkbox>
+                    <el-checkbox v-model="loginFormValue.trim">同意本公司的</el-checkbox>
                     <el-button type="primary" text class="goRegisterBtn">
                         《条款与协议》
                     </el-button>
                 </el-form-item> 
 
                 <el-form-item>
-                    <el-button style="width: 100%;" size="large" color="#F74800" type="success" @click="loginBtn(loginRuleForm)">登录</el-button>
+                    <el-button style="width: 100%;" size="large" color="#F74800" type="success" :disabled="loginBtnDisabled" @click="loginBtn(loginRuleForm)">登录</el-button>
 
                     <el-button style="width: 100%;" text>忘记密码</el-button>
                 </el-form-item>
@@ -58,9 +58,18 @@
 <script setup>
     import {ref, onBeforeUnmount} from 'vue';
     import { Bell, Message, Lock } from '@element-plus/icons-vue';  //图标
+    import { noteBaseRequest } from "@/request/note_request";
+    import { useUserStore } from "@/stores/userStore.js"
 
     // 自定义事件
-    const emits = defineEmits(['changeStep']);
+    const emits = defineEmits(['changeStep','childCloseDialog']);
+
+    //是否禁用登录按钮
+    const loginBtnDisabled = ref(false);  
+
+    // 用户共享的资源对象
+    const userStore = useUserStore();
+    const {setUserInfo} = userStore;
 
     // 显示登录框
     const loginVisible = ref(true);
@@ -120,12 +129,47 @@
     // 登录按钮
     const loginBtn = (formEl) => {
         if (!formEl) return
-        formEl.validate((valid) => {
-            console.log(valid);
+        formEl.validate( async (valid) => {
             if (valid) {
-                console.log('submit!')
+                loginBtnDisabled.value = true;  //禁用登录按钮
+                const { data: responseData } = await noteBaseRequest.post(
+                    '/user/login/email/password',
+                    {
+                        email: loginFormValue.value.email,
+                        password: loginFormValue.value.password
+                    }
+                ).catch(() => {
+                    ElMessage({
+                        message: '发送登录请求失败',
+                        type: 'error',
+                    })
+                    setTimeout(() => {
+                        loginBtnDisabled.value = false;  //解除禁用登录按钮
+                    },2000)
+                    throw '发送登录请求失败'
+                })
+                console.log(responseData)
+
+                if(responseData.success){
+                    
+                    localStorage.setItem('userToken',responseData.data.userToken);
+                    emits('childCloseDialog');
+                    const user = responseData.data.user;
+                    setUserInfo(user.id,user.email,user.nickname,user.headPic,user.level,user.time);
+                    ElMessage({
+                        message: responseData.message,
+                        type: 'success'
+                    })
+                }else{
+                    ElMessage({
+                        message: responseData.message,
+                        type: 'error'
+                    })
+                }
+                setTimeout(() => {
+                    loginBtnDisabled.value = false;  //解除禁用登录按钮
+                },2000)
             } else {
-                console.log('error submit!')
                 return false
             }
         }); 
@@ -156,5 +200,9 @@
         padding:0px;
         margin-top: -2px;
         background-color: #fff !important;
+    }
+
+    /deep/.el-checkbox__input.is-checked+.el-checkbox__label{
+        color:#000;
     }
 </style>

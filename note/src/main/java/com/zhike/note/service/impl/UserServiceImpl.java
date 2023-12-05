@@ -189,8 +189,9 @@ public class UserServiceImpl implements IUserservice {
             e.printStackTrace();
             throw new ServiceException("注册失败",EventCode.INSERT_EXCEPTION);
         }
+
         //只要错误，回滚 ServiceRollbackException
-        if(count != 0){
+        if(count != 1){
             throw new ServiceRollbackException("注册失败",EventCode.INSERT_ERROR);
         }
 
@@ -201,7 +202,6 @@ public class UserServiceImpl implements IUserservice {
                 .time(localTime)
                 .userId(user.getId())
                 .build();
-        System.out.println(log);
 
         try {
             count = userLogDao.insert(log);

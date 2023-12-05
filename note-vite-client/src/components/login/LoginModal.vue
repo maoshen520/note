@@ -10,7 +10,7 @@
 
             <!-- vue.js内置组件动画效果 -->
             <Transition name="bounce" mode="out-in">
-                <component ref="childRef" :is="showLoginModelCard" @changeStep="changeLoginModelStep"/>
+                <component ref="childRef" :is="showLoginModelCard" @changeStep="changeLoginModelStep" @childCloseDialog="dialogClose"/>
             </Transition>
             
             <!-- 登录对话框 -->
