@@ -10,10 +10,7 @@ import com.zhike.note.util.code.EventCode;
 import com.zhike.note.util.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -129,4 +126,36 @@ public class UserController {
             return new ResponseData(false,e.getMessage(),e.getCode());
         }
     }
+
+
+
+    /**
+     *退出登录（邮箱和密码）
+     * 请求地址 url:http://127.0.0.1:18081/zhike-notes/user/login/out
+     * @param userToken  邮箱号
+
+     * @return  响应数据{user, userToken}
+     */
+    @GetMapping("/login/out")
+    public ResponseData signOutlogin(@RequestHeader String userToken) {
+
+        //验证userToken参数是否为空
+        if(Validator.isEmpty(userToken)){
+            return new ResponseData(false,"登录状态有误", EventCode.PARAM_USER_TOKEN_WRONG);
+        }
+
+        try {
+            redisTemplate.delete(userToken);
+            return new ResponseData(true,"退出登录成功", EventCode.LOGIN_OUT_SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseData(false,"退出登录失败", EventCode.LOGIN_OUT_EXCEPTION);
+        }
+    }
+
+
+
+
+
+
 }

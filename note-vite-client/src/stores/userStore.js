@@ -14,14 +14,14 @@ export const useUserStore = defineStore(
 
         // 设置头像默认
         const headImage = computed( () => {
-            console.log(headPic.value)
-            if(headPic.value === null || headPic.value === undefined) {
+            if(headPic.value === null || headPic === undefined) {
                 return "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
             }else {
                 return headPic.value;
             }
         })
 
+        // 设置用户的信息
         const setUserInfo = (u_id,u_email,u_nickname,u_headPic,u_level,u_time) => {
             id.value = u_id;
             email.value = u_email;
@@ -30,6 +30,16 @@ export const useUserStore = defineStore(
             level.value = u_level;
             time.value = u_time;
 
+        }
+
+        //重置用户信息
+        const resetUserInfo = () => {
+            id.value = null;
+            email.value = null;
+            nickname.value = null;
+            headPic.value = null;
+            level.value = null;
+            time.value = null;
         }
 
         // 暴露出去
@@ -41,7 +51,8 @@ export const useUserStore = defineStore(
             level,
             time,
             headImage,
-            setUserInfo
+            setUserInfo,
+            resetUserInfo
         }
     },
     {    //本地存储  使用pinia-plugin-persistedstate插件
