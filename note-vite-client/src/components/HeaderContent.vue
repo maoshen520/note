@@ -26,7 +26,7 @@
                             <el-col :span="19">
                                 
                                 <div style="margin-bottom: 2px;">
-                                    <el-text class="mx-1" tag="b" size="large">{{nickname}}收到付款了</el-text>
+                                    <el-text class="mx-1" tag="b" size="large">{{nickname}}自定义昵称</el-text>
                                 </div>
                                 <div>
                                     <el-button size="small" type="success" color="#EAE9EA" style="color: #F74800;font-weight: bold;padding:0px 5px;height: 18px;background-color: #FFCCA9;margin-right: 20px;margin-top: -3px;" @click="changeLoginModalShowStatus(true)">会员</el-button>

@@ -38,10 +38,15 @@ import HelloWorld from './components/HelloWorld.vue'
 				<header_c></header_c>
 			</el-header>
 			<el-container>
+				<!-- 导航栏 -->
 				<el-aside>
 					<aside_c></aside_c>
 				</el-aside>
-				<el-main>Main</el-main>
+
+				<!-- 主界面 -->
+				<el-main style="background-color: #FAFAFC;">
+					<router-view />
+				</el-main>
 			</el-container>
 		</el-container>
 
@@ -85,6 +90,7 @@ import HelloWorld from './components/HelloWorld.vue'
 		// background-color: aquamarine;
 		width: 64px;
 		border-right: 1px solid #EAE9EA;
+		
 	}
 
 	
