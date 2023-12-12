@@ -13,9 +13,10 @@ export const useUserStore = defineStore(
         const time = ref(null);  //注册时间
 
         // 设置头像默认
+        let url = "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png";
         const headImage = computed( () => {
-            if(headPic.value === 'null' || headPic === null) {
-                return "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+            if(headPic.value == undefined || headPic.value === null) {
+                return url;
             }else {
                 return headPic.value;
             }
@@ -23,7 +24,7 @@ export const useUserStore = defineStore(
 
         //设置昵称默认-使用邮箱
         const defaultNickname = computed( () => {
-            if(nickname.value === 'null' || nickname.value === null){
+            if(nickname.value == undefined || nickname.value === null){
                 return email.value;
             }else{
                 return nickname.value;
