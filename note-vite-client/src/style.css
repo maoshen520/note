@@ -17,3 +17,12 @@ body,html{
 .clearfix{
 	overflow: hidden;
 }
+
+/* 橙色背景按钮 */
+/* .orange-bg-btn{
+	color: #F74800;
+	font-weight: bold;
+	padding:0px 5px;
+	height: 18px;
+	background-color: #FFCCA9;
+} */

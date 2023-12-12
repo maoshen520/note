@@ -14,10 +14,19 @@ export const useUserStore = defineStore(
 
         // 设置头像默认
         const headImage = computed( () => {
-            if(headPic.value === null || headPic === undefined) {
+            if(headPic.value === 'null' || headPic === null) {
                 return "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
             }else {
                 return headPic.value;
+            }
+        })
+
+        //设置昵称默认-使用邮箱
+        const defaultNickname = computed( () => {
+            if(nickname.value === 'null' || nickname.value === null){
+                return email.value;
+            }else{
+                return nickname.value;
             }
         })
 
@@ -29,8 +38,8 @@ export const useUserStore = defineStore(
             headPic.value = u_headPic;
             level.value = u_level;
             time.value = u_time;
-
         }
+        
 
         //重置用户信息
         const resetUserInfo = () => {
@@ -50,9 +59,10 @@ export const useUserStore = defineStore(
             headPic,
             level,
             time,
-            headImage,
             setUserInfo,
-            resetUserInfo
+            resetUserInfo,
+            headImage,
+            defaultNickname
         }
     },
     {    //本地存储  使用pinia-plugin-persistedstate插件

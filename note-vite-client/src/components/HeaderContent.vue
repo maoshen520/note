@@ -26,10 +26,10 @@
                             <el-col :span="19">
                                 
                                 <div style="margin-bottom: 2px;">
-                                    <el-text class="mx-1" tag="b" size="large">{{nickname}}自定义昵称</el-text>
+                                    <el-text class="mx-1" tag="b" size="large">{{defaultNickname}}</el-text>
                                 </div>
                                 <div>
-                                    <el-button size="small" type="success" color="#EAE9EA" style="color: #F74800;font-weight: bold;padding:0px 5px;height: 18px;background-color: #FFCCA9;margin-right: 20px;margin-top: -3px;" @click="changeLoginModalShowStatus(true)">会员</el-button>
+                                    <el-button v-if="level === 1" size="small" type="success" color="#EAE9EA" style="color: #F74800;font-weight: bold;padding:0px 5px;height: 18px;background-color: #FFCCA9;margin-right: 20px;margin-top: -3px;" @click="changeLoginModalShowStatus(true)">会员</el-button>
                                     <el-text class="mx-1" size="small" type="info">2023-12-12到期</el-text>
                                 </div>
                                 
@@ -80,7 +80,7 @@
 
     // 用户的共享数据对象
     const userStore = useUserStore();
-    const {id:userId,headImage,nickname} = storeToRefs(userStore);
+    const {id:userId,headImage,level,defaultNickname} = storeToRefs(userStore);
     const {resetUserInfo} = userStore;
 
     // 用户头像的导航栏
