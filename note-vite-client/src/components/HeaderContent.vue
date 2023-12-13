@@ -72,6 +72,7 @@
     import { userLoginModalStore } from '@/stores/LoginModalStore.js';
     import {useUserStore} from "@/stores/userStore.js";
     import {noteBaseRequest} from "@/request/note_request.js";
+    import {loginInvalid} from "@/utils/userLoginUtils.js";
 
     // 登录模态框共享资源的对象
     const loginModalStore = userLoginModalStore();
@@ -81,7 +82,7 @@
     // 用户的共享数据对象
     const userStore = useUserStore();
     const {id:userId,headImage,level,defaultNickname} = storeToRefs(userStore);
-    const {resetUserInfo} = userStore;
+
 
     // 用户头像的导航栏
     const userMenu = [
@@ -141,10 +142,7 @@
         })
 
         if(responseData.success){
-            // 用户共享的数据清空
-            resetUserInfo()
-            // userToken 本地存储删除
-            localStorage.removeItem('userToken');
+            loginInvalid(true);
         }else{
             ElMessage({
                 message: responseData.message,

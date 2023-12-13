@@ -12,9 +12,10 @@ public class EventCode {
     public static final String LOGIN_SAVE_USER_TOKEN_REDIS_EXCEPTION = "L_005";  //登录成功后存储用户信息至 redis 失败
     public static final String LOGIN_OUT_EXCEPTION = "L_006";  //退出登录异常
     public static final String LOGIN_OUT_SUCCESS = "L_007";  //退出登录成功
+    public static final String LOGIN_INVALID = "L_008";  //登录失效
 
     //=========================sql  业务状态码  =========================
-    public static final String SELECT_FAIL = "S_001";  //查询成功
+    public static final String SELECT_SUCCESS = "S_001";  //查询成功
     public static final String SELECT_EXCEPTION = "S_002";  //查询失败
     public static final String SELECT_ERROR = "S_003";  //查询错误
     public static final String SELECT_NONE = "S_004";  //未查到信息
@@ -50,4 +51,8 @@ public class EventCode {
     public static final String PARAM_VC_KEY_WRONG = "P_003";  //验证码查询关键词有误
     public static final String PARAM_VC_KEY_EMAIL_WRONG = "P_004";  //邮箱注册账号和获取验证码的邮箱不匹配
     public static final String PARAM_USER_TOKEN_WRONG = "P_005";  //登录的 userToken 有误
+
+
+    //=========================sql  redis 的状态码  =========================
+    public static final String REDIS_SERVE_ERROR = "R_001";  //redis服务
 }

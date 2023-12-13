@@ -29,7 +29,7 @@ public class Thing {
     private Integer finished;  //是否已经完成【0：未完成  1：完成】
     private Date time; // 创建时间
     @Column("update_time")
-    private Date updateTime; // 最后修改时间时间
+    private Date updateTime; // 最后修改时间
     private Integer top;  //是否置顶【0：不置顶  1：置顶】
     @Column(onInsertValue = "1")
     private Integer status; //状态【0：删除， -1彻底删除， 1：正常 】
