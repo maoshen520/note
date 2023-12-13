@@ -16,4 +16,14 @@ public interface IThingService {
      */
     List<Thing> getUserNormalThing(int userId) throws ServiceException;
 
+    /**
+     * 置顶小记（取消置顶小记）
+     *
+     * @param isTop  是否置顶小记
+     * @param thingId  小记编号
+     * @param userId  用户编号
+     * @throws ServiceException  业务异常
+     */
+    void topThing(boolean isTop, int thingId, int userId) throws ServiceException;
+
 }

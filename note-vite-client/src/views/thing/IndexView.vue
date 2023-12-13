@@ -61,7 +61,7 @@
                                                 placement="top"
                                                 :offset="5"
                                             >
-                                                <el-button text size="small" style="padding: 0px;margin-left: 8px;">
+                                                <el-button :disabled="item.toTop" text size="small" style="padding: 0px;margin-left: 8px;" @click="topThing(!!!item.top, item.id, index)">
                                                     <el-icon size="16"><component :is="thingCardTopContext(item.top).icon" /></el-icon>
                                                 </el-button>
                                             </el-tooltip>
@@ -170,6 +170,53 @@
             return [];
         }else {
             return tags.split(',');
+        }
+    }
+
+    // 置顶小记（取消置顶）
+    const topThing = async (isTop, thingId, index) => {
+
+        //判断用户的登录状态
+        const userToken =  await getUserToken();
+
+        // 禁用按钮
+        const thing = things.value[index];
+        thing.toTop = true;
+
+        const { data: responseData } = await noteBaseRequest.get(
+            "/thing/top",
+            {
+                params:{isTop, thingId},
+                headers: {
+                    userToken:userToken
+                }
+            }
+        ).catch(() => {
+            ElMessage({
+                message:isTop ? '置顶小记请求失败' : '取消置顶小记请求失败',
+                type: 'error',
+            })
+            thing.toTop = false; //解除禁用按钮
+            throw isTop ? '置顶小记请求失败' : '取消置顶小记请求失败';
+        })
+        console.log(responseData)
+        if(responseData.success){
+            // things.value = responseData.data;  //小记列表
+            ElMessage({
+                message:responseData.message,
+                type: 'success',
+            });
+            getThingList();
+        }else{
+            ElMessage({
+                message: responseData.message,
+                type: 'error'
+            });
+            thing.toTop = false; //解除禁用按钮
+            // 登录已失效
+            if(responseData.code == 'L_008'){
+                loginInvalid(true);
+            }
         }
     }
 

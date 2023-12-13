@@ -21,6 +21,9 @@ public class EventCode {
     public static final String SELECT_NONE = "S_004";  //未查到信息
     public static final String INSERT_EXCEPTION = "S_005";  //新增异常
     public static final String INSERT_ERROR = "S_006";  //新增错误
+    public static final String UPDATE_EXCEPTION = "S_007";  //修改异常
+    public static final String UPDATE_ERROR = "S_008";  //修改错误
+    public static final String UPDATE_SUCCESS = "S_009";  //修改成功
 
 
     //=========================sql  账号状态码  =========================
@@ -51,8 +54,18 @@ public class EventCode {
     public static final String PARAM_VC_KEY_WRONG = "P_003";  //验证码查询关键词有误
     public static final String PARAM_VC_KEY_EMAIL_WRONG = "P_004";  //邮箱注册账号和获取验证码的邮箱不匹配
     public static final String PARAM_USER_TOKEN_WRONG = "P_005";  //登录的 userToken 有误
+    public static final String PARAM_TOP_WRONG = "P_006";  //置顶参数有误
+    public static final String PARAM_THING_ID_WRONG = "P_007";  //小记编号参数有误
 
 
     //=========================sql  redis 的状态码  =========================
     public static final String REDIS_SERVE_ERROR = "R_001";  //redis服务
+
+
+
+    //=========================sql  小记 的状态码  =========================
+    public static final String THING_tOP_SUCCESS = "T_001";  //置顶小记成功
+    public static final String THING_tOP_FAILED = "T_002";  //置顶小记失败
+    public static final String THING_CANCET_tOP_SUCCESS = "T_003";  //取消置顶小记成功
+    public static final String THING_CANCET_tOP_FAILED = "T_004";  //取消置顶小记失败
 }
