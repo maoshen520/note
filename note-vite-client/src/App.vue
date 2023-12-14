@@ -6,7 +6,7 @@
 				<!-- header -->
 				<header_c></header_c>
 			</el-header>
-			<el-container>
+			<el-container style="height:calc(100% - 64px) ;">
 				<!-- 导航栏 -->
 				<el-aside>
 					<aside_c></aside_c>
