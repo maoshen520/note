@@ -11,7 +11,7 @@
         <el-card class="box-card" shadow="never">
 
                 <!--小记列表-- 骨架 :throttle="200"-->
-                <el-skeleton v-if="!isLoad" animated >
+                <el-skeleton v-if="!isLoad" animated>
                     <template #template>
                         <el-space  direction="vertical" alignment="start" :size="10" v-for="(item,index) in 12" :key="index">
                             <el-space wrap :size="10" >
@@ -53,20 +53,27 @@
                 </el-skeleton>
 
                 <!-- 小记列表 -->
-                <el-space v-else-if="isLoad && things.length > 0" direction="vertical" alignment="start" :size="10" v-for="(item,index) in things" :key="item.id">
-                    <ThingCard
-                        :id="item.id"
-                        :finished="item.finished == 1 ? true : false"
-                        :title="item.title"
-                        :top="item.top"
-                        :tags="item.tags.split(',')"
-                        :time="item.updateTime"
-                        @changeStatus="getThingList()"
-                    ></ThingCard>
-                </el-space>
-
+                <div>
+                    <TransitionGroup @before-enter="beforeEnter" @enter="enterEvent">   
+                        <template v-if="isLoad && things.length > 0">
+                            <ThingCard
+                                class="thing-cards"
+                                v-for="(item,index) in things" :key="item.id"
+                                :id="item.id"
+                                :data-index="index"
+                                :finished="!!item.finished"
+                                :title="item.title"
+                                :top="!!item.top"
+                                :tags="item.tags.split(',')"
+                                :time="item.updateTime"
+                                @changeStatus="getThingList()"
+                            ></ThingCard>
+                        </template>
+                    </TransitionGroup>
+                </div>
+                    
                 <!-- 暂无小记数据 -->
-                <template v-else>
+                <template v-if="isLoad && things.length == 0">
                     <el-empty description="暂无小记数据" />
                 </template>
 
@@ -80,12 +87,13 @@
     import {getUserToken,loginInvalid} from "@/utils/userLoginUtils.js";
     import {noteBaseRequest} from "@/request/note_request.js";
     import ThingCard from "@/components/thing/ThingCard.vue";
+    import gsap from "gsap";
 
     const isLoad = ref(false);  //请求中显示骨架
 
     // 获取小记列表数据
     const things = ref([]);   //小记列表
-    const getThingList = async (isUpdateLoading) => {
+    const getThingList = async () => {
         //判断用户的登录状态
         const userToken = await getUserToken();
         const { data: responseData } = await noteBaseRequest.get(
@@ -104,9 +112,9 @@
         })
         console.log(responseData)
         if(responseData.success){
+            things.value = [];
             things.value = responseData.data;  //小记列表
-
-            if(isUpdateLoading) isLoad.value = true;
+            isLoad.value = true;
         }else{
             ElMessage({
                 message: responseData.message,
@@ -119,7 +127,26 @@
         }
 
     }
-    getThingList(true);
+    getThingList();
+
+
+    // greenSock
+    const beforeEnter = (el) => {
+        gsap.set(el,{
+            y: 30,
+            opacity: 0
+        })
+    }
+
+    const enterEvent = (el, done) => {
+        gsap.to(el,{
+            y: 0,  //偏移量
+            opacity: 1,  //透明度
+            duration: 0.5,  //时间--秒
+            delay:el.dataset.index * 0.12,
+            onComplete: done  //动画完成时调用的函数
+        })
+    }
 
     
 
@@ -136,21 +163,10 @@
         margin-bottom: 20px;
     }
 
-    .box-card-list{
-        border: none;
-        background-color: #F2F6F7;
-        // padding: 10px;
-        /deep/.el-card__body{
-            padding: 10px;
-        }
-        .card-list-title{
-            font-size: 14px;
-            font-weight: 600;
-            max-width: 162px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+    .thing-cards{
+        transition: all 0.5s;
     }
+
+    
 
 </style>

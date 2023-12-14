@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <el-space wrap :size="10" >
+    <el-space  direction="vertical" alignment="start" :size="10" >
+        <el-space wrap  :size="10" >
             <!-- 水印 -->
             <el-watermark 
                 :width="200"
@@ -29,7 +29,7 @@
                                 <div class="card-list-title">{{ title }}</div> 
                             </el-tooltip>
                             
-                            <div>
+                            <div style="width:84px">
                                 <!-- 删除 -->
                                 <el-tooltip
                                     class="box-item"
@@ -89,12 +89,18 @@
                 </el-card>
             </el-watermark>
         </el-space>
-    </div>
+    </el-space>
+
 </template>
 
 <script setup>
     import {ref} from "vue"
-    import { Delete, Upload, Download, EditPen} from '@element-plus/icons-vue';  //图标
+    import { 
+        Delete, 
+        Upload, 
+        Download, 
+        EditPen
+    } from '@element-plus/icons-vue';  //图标
     import {getUserToken,loginInvalid} from "@/utils/userLoginUtils.js";
     import {noteBaseRequest} from "@/request/note_request.js";
 
@@ -111,12 +117,12 @@
     // 自定义事件
     const emits = defineEmits(['changeStatus']);
 
-    const topBtnDisabled = ref(false);  //禁用置顶/取消置顶按钮
-
+    //禁用置顶/取消置顶按钮
+    const topBtnDisabled = ref(false);  
 
     // 置顶按钮和取消置顶按钮显示对象
     const thingCardTopContext = () => {
-        if(propsData.top === 1){
+        if(propsData.top){
             return {
                 icon:Download,
                 text:'取消置顶'
@@ -181,8 +187,24 @@
 <style lang="less" scoped>
     .card-header {
         display: flex;
-        justify-content: space-between;
+        // justify-content: space-between;
         align-items: center;
+    }
+    .box-card-list{
+        border: none;
+        background-color: #F2F6F7;
+        /deep/.el-card__body{
+            padding: 10px;
+        }
+        .card-list-title{
+            min-width: 100px;
+            max-width: 162px;
+            font-size: 14px;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     }
 </style>
 
