@@ -72,7 +72,7 @@
     import { userLoginModalStore } from '@/stores/LoginModalStore.js';
     import {useUserStore} from "@/stores/userStore.js";
     import {noteBaseRequest} from "@/request/note_request.js";
-    import {loginInvalid} from "@/utils/userLoginUtils.js";
+    import {loginInvalid,getUserToken} from "@/utils/userLoginUtils.js";
 
     // 登录模态框共享资源的对象
     const loginModalStore = userLoginModalStore();
@@ -117,14 +117,16 @@
         // 用户共享的数据清空
         // userToken 本地存储删除
 
-        const userToken = localStorage.getItem('userToken');
-        if(userToken === null){
-            ElMessage({
-                message: '登录已失效',
-                type: 'error',
-            })
-            return false;
-        }
+        // const userToken = localStorage.getItem('userToken');
+        // if(userToken === null){
+        //     ElMessage({
+        //         message: '登录已失效',
+        //         type: 'error',
+        //     })
+        //     return false;
+        // }
+        // 判断用户是否登录（检查本地存储的userToken 值）
+        const userToken = await getUserToken();
 
         const { data: responseData } =await noteBaseRequest.get(
             "/user/login/out",

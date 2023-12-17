@@ -111,4 +111,38 @@ public class ThingController {
         }
     }
 
+
+    /**
+     * 删除小记（彻底）
+     * 请求地址 url:http://127.0.0.1:18081/zhike-notes/thing/delete
+     * @param complete 是否置顶 小记
+     * @param thingId  小记编号
+     * @param isRecycleBin  是否为回收站操作
+     * @param userToken  redis key 登录用户的信息
+     * @return  响应数据
+     */
+    @DeleteMapping("/delete")
+    public ResponseData deleteThing(boolean complete, int thingId, boolean isRecycleBin ,@RequestHeader String userToken) {
+
+        try {
+            // 判断登录参数
+            User user = TokenValidateUtil.validateUserToken(userToken, redisTemplate);
+
+            // 验证彻底参数
+            if (Validator.isEmpty(complete)) return new ResponseData(false, "删除参数有误", EventCode.PARAM_THING_COMPLETE_WRONG);
+
+            // 验回收站参数
+            if (Validator.isEmpty(isRecycleBin)) return new ResponseData(false, "删除参数有误", EventCode.PARAM_THING_RECYCLE_BIN_WRONG);
+
+            //验证小记编号参数
+            if (Validator.isEmpty(thingId)) return new ResponseData(false, "小记编号参数有误", EventCode.PARAM_THING_ID_WRONG);
+
+            //调用置顶小记业务
+            thingService.deleteThingById(complete, thingId, user.getId(),isRecycleBin);
+            return new ResponseData(true,complete ? "彻底删除成功" : "删除成功", EventCode.UPDATE_SUCCESS);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return new ResponseData(false,e.getMessage(), e.getCode());
+        }
+    }
 }

@@ -54,10 +54,17 @@
 
                 <!-- 小记列表 -->
                 <div>
-                    <TransitionGroup @before-enter="beforeEnter" @enter="enterEvent">   
+                    <TransitionGroup 
+                        @before-enter="beforeEnter" 
+                        @enter="enterEvent"
+                        @before-leave="beforeLeave" 
+                        @leave="leaveEvent"
+                        move-class="move-transtion"
+                    >   
                         <template v-if="isLoad && things.length > 0">
+                            <!-- class="thing-cards" -->
                             <ThingCard
-                                class="thing-cards"
+                                
                                 v-for="(item,index) in things" :key="item.id"
                                 :id="item.id"
                                 :data-index="index"
@@ -67,6 +74,7 @@
                                 :tags="item.tags.split(',')"
                                 :time="item.updateTime"
                                 @changeStatus="getThingList()"
+                                @delete="showDeleteRemindDialog"
                             ></ThingCard>
                         </template>
                     </TransitionGroup>
@@ -76,6 +84,16 @@
                 <template v-if="isLoad && things.length == 0">
                     <el-empty description="暂无小记数据" />
                 </template>
+
+                <!-- 删除提示框 -->
+                <deleteRemindDialog 
+                    :show="delectRemind.show"
+                    :describe="delectRemind.desc"
+                    @delect="deleteThing"
+                    @cancel="delectRemind.show = false"
+                ></deleteRemindDialog>
+
+                <ThingEdit></ThingEdit>
 
         </el-card>
     </div>
@@ -88,6 +106,8 @@
     import {noteBaseRequest} from "@/request/note_request.js";
     import ThingCard from "@/components/thing/ThingCard.vue";
     import gsap from "gsap";
+    import deleteRemindDialog from "@/components/remind/DeleteRemindDialog.vue";
+    import ThingEdit from "@/components/thing/ThingEdit.vue";
 
     const isLoad = ref(false);  //请求中显示骨架
 
@@ -129,15 +149,14 @@
     }
     getThingList();
 
-
-    // greenSock
+    //显示动画之前的初始位置 greenSock
     const beforeEnter = (el) => {
         gsap.set(el,{
             y: 30,
             opacity: 0
         })
     }
-
+    // 显示动画
     const enterEvent = (el, done) => {
         gsap.to(el,{
             y: 0,  //偏移量
@@ -148,6 +167,86 @@
         })
     }
 
+    //隐藏动画之前的初始位置 greenSock
+    const beforeLeave = (el) => {
+        gsap.set(el,{
+           opacity: 1,
+           scale: 1,
+           position: 'fixed',
+           top: 0,
+           left:'50%'
+        })
+    }
+    // 隐藏动画
+    const leaveEvent = (el, done) => {
+        gsap.to(el,{
+            scale: 0.01,
+            opacity: 0,  //透明度
+            duration: 0.5,  //时间--秒
+            onComplete: done  //动画完成时调用的函数
+        })
+    }
+
+    // 删除提示框的对象
+    const delectRemind = ref({
+        show:false,  //是否显示
+        id:'',  //小记编号
+        desc:'',  //提醒框的提示内容
+    })
+
+    // 显示删除提醒框
+    const showDeleteRemindDialog = ({id, title}) => {
+        delectRemind.value.id = id;  //将要删除的小记编号
+        delectRemind.value.desc = '删除《' + title + '》将会在回收站恢复，彻底删除则无法恢复'; //将要删除的描述内容
+        delectRemind.value.show = true;  //显示删除提醒框
+    }   
+
+    // 删除小记   --complete 是否彻底删除
+    const deleteThing =async (complete) => {
+        console.log(complete)
+
+        delectRemind.value.show = false;  //关闭删除提醒框
+
+        //判断用户的登录状态
+        const userToken =  await getUserToken();
+
+        const { data: responseData } = await noteBaseRequest.delete(
+            "/thing/delete",
+            {
+                params:{
+                    complete,
+                    isRecycleBin:false,
+                    thingId:delectRemind.value.id
+                },
+                headers: {
+                    userToken:userToken
+                }
+            }
+        ).catch(() => {
+            ElMessage({
+                message: complete ? '彻底删除小记请求失败' : '删除小记请求失败',
+                type: 'error',
+            })
+            throw complete ? '彻底删除小记请求失败' : '删除小记请求失败';
+        })
+        console.log(responseData)
+        if(responseData.success){
+            ElMessage({
+                message:responseData.message,
+                type: 'success',
+            });
+            getThingList(); 
+        }else{
+            ElMessage({
+                message: responseData.message,
+                type: 'error'
+            });
+            // 登录已失效
+            if(responseData.code == 'L_008'){
+                loginInvalid(true);
+            }
+        }
+    }
     
 
 </script>
@@ -164,6 +263,9 @@
     }
 
     .thing-cards{
+        transition: all 0.5s;
+    }
+    .move-transtion{
         transition: all 0.5s;
     }
 

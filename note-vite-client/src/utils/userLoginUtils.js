@@ -15,6 +15,10 @@ export const getUserToken = () => {
     if(token === null){
         // 未登录
         const {changeLoginModalShowStatus} = userLoginModalStore();  //改变登录窗口显示的函数
+        
+        // 用户共享的数据清空
+        const {resetUserInfo} = useUserStore();
+        resetUserInfo();
         changeLoginModalShowStatus(true);
         throw "未登录";
     }else {

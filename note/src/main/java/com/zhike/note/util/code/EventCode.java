@@ -56,6 +56,8 @@ public class EventCode {
     public static final String PARAM_USER_TOKEN_WRONG = "P_005";  //登录的 userToken 有误
     public static final String PARAM_TOP_WRONG = "P_006";  //置顶参数有误
     public static final String PARAM_THING_ID_WRONG = "P_007";  //小记编号参数有误
+    public static final String PARAM_THING_COMPLETE_WRONG = "P_008";  //删除参数有误（是否为彻底删除的参数）
+    public static final String PARAM_THING_RECYCLE_BIN_WRONG = "P_009";  //删除参数有误（是否为回收站操作的参数）
 
 
     //=========================sql  redis 的状态码  =========================
@@ -68,4 +70,6 @@ public class EventCode {
     public static final String THING_tOP_FAILED = "T_002";  //置顶小记失败
     public static final String THING_CANCET_tOP_SUCCESS = "T_003";  //取消置顶小记成功
     public static final String THING_CANCET_tOP_FAILED = "T_004";  //取消置顶小记失败
+    public static final String THING_DELETE_SUCCESS = "T_005";  //删除小记成功
+    public static final String THING_COMPLETE_DELETE_SUCCESS = "T_006";  //彻底删除小记成功
 }

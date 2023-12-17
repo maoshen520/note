@@ -38,7 +38,12 @@
                                     placement="top"
                                     :offset="5"
                                 >
-                                    <el-button text size="small" style="padding: 0px;margin-left: 20px;">
+                                    <el-button 
+                                        text 
+                                        size="small" 
+                                        style="padding: 0px;margin-left: 20px;"
+                                        @click="emits('delete',{id,title})"
+                                    >
                                         <el-icon size="16"><Delete /></el-icon>
                                     </el-button>
                                 </el-tooltip>
@@ -51,7 +56,12 @@
                                     placement="top"
                                     :offset="5"
                                 >
-                                    <el-button :disabled="topBtnDisabled" text size="small" style="padding: 0px;margin-left: 8px;" @click="topThing(!top)">
+                                    <el-button 
+                                        :disabled="topBtnDisabled" 
+                                        text 
+                                        size="small" 
+                                        style="padding: 0px;margin-left: 8px;" @click="topThing(!top)"
+                                    >
                                         <el-icon size="16"><component :is="thingCardTopContext().icon" /></el-icon>
                                     </el-button>
                                 </el-tooltip>
@@ -64,7 +74,11 @@
                                     placement="top"
                                     :offset="5"
                                 >
-                                    <el-button text size="small" style="padding: 0px;margin-left: 8px;">
+                                    <el-button 
+                                        text 
+                                        size="small" 
+                                        style="padding: 0px;margin-left: 8px;"
+                                    >
                                         <el-icon size="16"><EditPen /></el-icon>
                                     </el-button>    
                                 </el-tooltip>
@@ -115,7 +129,7 @@
     })
 
     // 自定义事件
-    const emits = defineEmits(['changeStatus']);
+    const emits = defineEmits(['changeStatus','delete']);
 
     //禁用置顶/取消置顶按钮
     const topBtnDisabled = ref(false);  
