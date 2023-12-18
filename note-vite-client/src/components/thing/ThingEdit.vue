@@ -6,83 +6,114 @@
             :close-on-press-escape="false"
             :show-close="false"
             :width="500"
-        >
-            <el-card class="box-card">
-                <template #header>
-                    <div>
-                        <el-input  placeholder="Please input" />
-                    </div>
-                    <div style="margin-top:10px;">
-                        <el-row>
-                            <el-col :span="2">
-                                <el-text size="large" style="line-height: 24px;" type="info">标签:</el-text>
-                            </el-col>
-                            <el-col :span="22">
-                                <el-space wrap>
-                                    <!-- 标签列表 -->
-                                    <el-tag
-                                        v-for="tag in dynamicTags"
-                                        :key="tag"
-                                        class="mx-1"
-                                        effect="light"
-                                        type="info"
-                                        closable
-                                        :disable-transitions="false"
-                                        @close="handleClose(tag)"
-                                    >
-                                        {{ tag }}
-                                    </el-tag>
-                                    
-                                    <!-- 标签输入框 -->
-                                    <el-input
-                                        v-if="tagsInputVisible"
-                                        ref="InputRef"
-                                        v-model="tagsInputValue"
-                                        class="input-new-tag"
-                                        size="small"
-                                        @keyup.enter="handleInputConfirm"
-                                        @blur="handleInputConfirm"
+        >   
+            <!-- 水印 -->
+            <el-watermark 
+                :width="500"
+                :height="500" 
+                content="已完成" 
+                :font="{
+                    fontSize: 30,
+                    color: '#F74800',
+                    fontWeight:'600'
+                }"
+                :offset="[220,0]"
+            >
+                <el-card class="box-card">
+                    <template #header>
+                        <!-- 小记标题部分 -->
+                        <div>
+                            <el-input  placeholder="请输入小记标题" />
+                        </div>
+
+                        <!-- 是否置顶 -->
+                        <div style="margin-top:10px;">
+                            <el-row>
+                                <el-col :span="2">
+                                    <el-text size="large" style="line-height: 32px;" type="info">置顶:</el-text>
+                                </el-col>
+                                <el-col :span="22">
+                                    <el-switch
+                                        v-model="value2"
+                                        class="ml-2"
+                                        style="--el-switch-on-color: #F74800; --el-switch-off-color: #EAE9EA;margin-left: 8px;"
                                     />
-                                    <!-- 增加标签按钮 -->
-                                    <el-button 
-                                        v-else 
-                                        :disabled="tagsDisabledBtn"
-                                        class="button-new-tag dashed" 
-                                        size="small" 
-                                        plain 
-                                        bg
-                                        @click="showInput"
-                                    >
-                                        +
-                                    </el-button>
-                                </el-space>
+                                </el-col>
+                            </el-row>
+                        </div>
+
+                        <!-- 小记标签部分 -->
+                        <div style="margin-top:10px;">
+                            <el-row>
+                                <el-col :span="2">
+                                    <el-text size="large" style="line-height: 24px;" type="info">标签:</el-text>
+                                </el-col>
+                                <el-col :span="22">
+                                    <el-space wrap>
+                                        <!-- 标签列表 -->
+                                        <el-tag
+                                            v-for="tag in dynamicTags"
+                                            :key="tag"
+                                            class="mx-1"
+                                            effect="light"
+                                            type="info"
+                                            closable
+                                            :disable-transitions="false"
+                                            @close="handleClose(tag)"
+                                        >
+                                            {{ tag }}
+                                        </el-tag>
+                                        
+                                        <!-- 标签输入框 -->
+                                        <el-input
+                                            v-if="tagsInputVisible"
+                                            ref="InputRef"
+                                            v-model="tagsInputValue"
+                                            class="input-new-tag"
+                                            size="small"
+                                            @keyup.enter="handleInputConfirm"
+                                            @blur="handleInputConfirm"
+                                        />
+                                        <!-- 增加标签按钮 -->
+                                        <el-button 
+                                            v-else 
+                                            :disabled="tagsDisabledBtn"
+                                            class="button-new-tag dashed" 
+                                            size="small" 
+                                            plain 
+                                            bg
+                                            @click="showInput"
+                                        >
+                                            +
+                                        </el-button>
+                                    </el-space>
+                                </el-col>
+                            </el-row>
+                        </div>
+                        
+                    </template>
+
+                    <!-- 内容 -->
+                    <div class="content">
+                        <el-row v-for="item in 7" :key="item" style="margin-bottom:10px ;">
+                            <el-col :span="2">
+                                <el-checkbox v-model="checked1" label="" size="large" />
                             </el-col>
-                        </el-row>
+                            <el-col :span="17">
+                                <el-input  placeholder="请输入内容" />
+                            </el-col>
+                            <el-col :span="5">
+                                <el-button circle color="#EAE9EA" style="margin-left:15px;">
+                                    <el-icon size="18" color="#74787E"><CirclePlusFilled /></el-icon>
+                                </el-button>
+                                <el-button circle color="#EAE9EA">
+                                    <el-icon size="18" color="#74787E"><DeleteFilled /></el-icon>
+                                </el-button>
+                            </el-col>
+                        </el-row>  
                     </div>
-                    
-                </template>
-
-                <div>
-                    <el-row v-for="item in 5" :key="item" style="margin-bottom:10px ;">
-                        <el-col :span="2">
-                            <el-checkbox v-model="checked1" label="" size="large" />
-                        </el-col>
-                        <el-col :span="17">
-                            <el-input  placeholder="Please input" />
-                        </el-col>
-                        <el-col :span="5">
-                            <el-button :icon="Bell" circle color="#EAE9EA" style="margin-left:15px"/>
-                            <el-button :icon="Bell" circle color="#EAE9EA" />
-                        </el-col>
-                    </el-row>  
-                </div>
-                <template #footer>Footer content</template>
-
-                <!-- <template #footer>
-                    <el-button color="#FFCCA9" style="color: #F74800;" plain>新增小记</el-button>
-                    <el-button color="#FFCCA9" style="color: #F74800;" plain>新增小记</el-button>
-                </template> -->
-            </el-card>
+                </el-card>
+            </el-watermark>
             <template #footer>
                 <div>
                     <el-button text bg style="width:calc((100% - 12px) / 2)" @click="dialogVisible = false">取消</el-button>
@@ -95,7 +126,7 @@
 
 <script setup>
     import {ref,nextTick} from "vue";
-    import { Plus,Bell} from '@element-plus/icons-vue';  //图标
+    import { CirclePlusFilled,DeleteFilled} from '@element-plus/icons-vue';  //图标
 
     // // 父组件传值
     // const propsData = defineProps({
@@ -109,6 +140,8 @@
     // const emits = defineEmits(['delect','cancel']) 
 
     const dialogVisible = ref(true);
+
+    const value2 = ref(true)
 
     const checked1 = ref(true)
     
@@ -147,6 +180,12 @@
             tagsDisabledBtn.value = true;
         }
     }
+
+    // 创建一个代办事项
+    const oncreateTuDoThing = () => ({
+        checked:false,  //是否已经完成
+        thing:''  // 待办事项
+    })
 
 </script>
 
@@ -197,13 +236,20 @@
     }
 
     /deep/.el-dialog__footer{
-        padding: 10px;
+        padding: 15px;
     }
 
+    // 橙色边框无背景
     .orange-border-btn{
         border-color:#F74800;
         color: #F74800;
         --el-button-hover-bg-color:#FAD4A9;
+    }
+
+    .content{
+        max-height: 210px;
+        overflow: hidden;
+        overflow-y: scroll;
     }
     
 </style>
