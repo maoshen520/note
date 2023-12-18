@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-dialog 
-            :model-value="true"
+            :model-value="dialogVisible"
             :close-on-click-modal="false"
             :close-on-press-escape="false"
             :show-close="false"
@@ -84,12 +84,10 @@
                 </template> -->
             </el-card>
             <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="dialogVisible = false">Cancel</el-button>
-                    <el-button type="primary" @click="dialogVisible = false">
-                    Confirm
-                    </el-button>
-                </span>
+                <div>
+                    <el-button text bg style="width:calc((100% - 12px) / 2)" @click="dialogVisible = false">取消</el-button>
+                    <el-button class="orange-border-btn" gb style="width:calc((100% - 12px) / 2)" @click="dialogVisible = false">保存</el-button>   
+                </div>
             </template>
         </el-dialog>
     </div>
@@ -109,6 +107,9 @@
 
     // //自定义事件--彻底删除--删除--取消
     // const emits = defineEmits(['delect','cancel']) 
+
+    const dialogVisible = ref(true);
+
     const checked1 = ref(true)
     
     //增加标签输入框的值
@@ -154,20 +155,12 @@
         display: none;
     }
     /deep/.el-dialog__body{
-        padding: 0px;
-        
+        padding: 0px;  
+    }
+    /deep/.el-card{
+        box-shadow: none;
     }
 
-    // .el-tag + .el-tag {
-    //     margin-left: 10px;
-    // }
-    // .button-new-tag {
-    //     margin-left: 10px;
-    //     height: 32px;
-    //     line-height: 30px;
-    //     padding-top: 0;
-    //     padding-bottom: 0;
-    // }
     .input-new-tag{
         width: 90px;
         // margin-left: 10px;
@@ -175,13 +168,9 @@
     }
     .button-new-tag{
         font-size:18px;
-        // border-style: dashed;
+
     }
-    // .button-new-tag:hover{
-    //     color: #F74800;
-    //     border-color: #F74800;
-    // }
-    
+
     // 多选框样式
     .el-checkbox.el-checkbox--large{
         height: 30px;
@@ -193,4 +182,28 @@
     /deep/.el-checkbox__inner:hover{
         border-color: #F74800;
     }
+
+    // 输入框边框样式
+    /deep/.el-input{
+        --el-input-focus-border: #F74800 !important;
+        --el-input-focus-border-color:#F74800;
+    }
+
+    // 增加标签按钮样式
+    .button-new-tag{
+        --el-button-hover-border-color:#F74800;
+        --el-button-hover-text-color:#F74800;
+        --el-button-active-border-color:#F74800;
+    }
+
+    /deep/.el-dialog__footer{
+        padding: 10px;
+    }
+
+    .orange-border-btn{
+        border-color:#F74800;
+        color: #F74800;
+        --el-button-hover-bg-color:#FAD4A9;
+    }
+    
 </style>
