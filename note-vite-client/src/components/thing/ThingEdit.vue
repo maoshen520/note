@@ -11,7 +11,7 @@
             <el-watermark 
                 :width="500"
                 :height="500" 
-                content="已完成" 
+                :content="formValue.isFinished ? '已完成' : ''" 
                 :font="{
                     fontSize: 30,
                     color: '#F74800',
@@ -23,18 +23,18 @@
                     <template #header>
                         <!-- 小记标题部分 -->
                         <div>
-                            <el-input  placeholder="请输入小记标题" />
+                            <el-input v-model="formValue.title"  placeholder="请输入小记标题" />
                         </div>
 
                         <!-- 是否置顶 -->
-                        <div style="margin-top:10px;">
+                        <div style="margin-top:10px;padding: 0px 11px;">
                             <el-row>
                                 <el-col :span="2">
                                     <el-text size="large" style="line-height: 32px;" type="info">置顶:</el-text>
                                 </el-col>
                                 <el-col :span="22">
                                     <el-switch
-                                        v-model="value2"
+                                        v-model="formValue.top"
                                         class="ml-2"
                                         style="--el-switch-on-color: #F74800; --el-switch-off-color: #EAE9EA;margin-left: 8px;"
                                     />
@@ -43,7 +43,7 @@
                         </div>
 
                         <!-- 小记标签部分 -->
-                        <div style="margin-top:10px;">
+                        <div style="margin-top:10px;padding: 0px 11px;">
                             <el-row>
                                 <el-col :span="2">
                                     <el-text size="large" style="line-height: 24px;" type="info">标签:</el-text>
@@ -52,7 +52,7 @@
                                     <el-space wrap>
                                         <!-- 标签列表 -->
                                         <el-tag
-                                            v-for="tag in dynamicTags"
+                                            v-for="tag in formValue.tags"
                                             :key="tag"
                                             class="mx-1"
                                             effect="light"
@@ -89,16 +89,15 @@
                                     </el-space>
                                 </el-col>
                             </el-row>
-                        </div>
-                        
+                        </div>   
                     </template>
 
                     <!-- 内容 -->
                     <div class="content">
 
                         <el-button 
-                            v-if="toDuThingContent.length == 0"
-                            style="width: 100%;font-size: 14px;margin-bottom: 10px;border-style: dashed;"
+                            v-if="formValue.content.length == 0"
+                            style="width: 100%;font-size: 14px;border-style: dashed;"
                             class="button-new-tag dashed" 
                             plain 
                             @click="addTuDoThing(0)"
@@ -108,14 +107,16 @@
                         </el-button>
 
                         <template v-else>
-                            <el-row v-for="(item,index) in toDuThingContent" :key="item" style="margin-bottom:10px ;">
+                            <el-row v-for="(item,index) in formValue.content" :key="item" style="margin-bottom:10px ;">
+                                <!-- 复选框 -->
                                 <el-col :span="2">
                                     <el-checkbox v-model="item.checked" label="" size="large" />
                                 </el-col>
-                                <el-col :span="17">
-                                    <el-input v-model="item.thing"  placeholder="请输入内容" />
+                                <!-- 输入框 -->
+                                <el-col :span="16">
+                                    <el-input v-model="item.thing"  placeholder="请输入..." style="--el-input-border:none"/>
                                 </el-col>
-                                <el-col :span="5">
+                                <el-col :span="6">
                                     <!-- 增加 -->
                                     <el-button circle color="#EAE9EA" style="margin-left:15px;" @click="addTuDoThing(index+1)">
                                         <el-icon size="16" color="#74787E"><CirclePlusFilled /></el-icon>
@@ -141,7 +142,7 @@
 </template>
 
 <script setup>
-    import {ref,nextTick} from "vue";
+    import {ref,nextTick, computed} from "vue";
     import { CirclePlusFilled,DeleteFilled,Plus} from '@element-plus/icons-vue';  //图标
 
     // // 父组件传值
@@ -159,8 +160,27 @@
 
     const value2 = ref(true)
 
-    const checked1 = ref(true)
-    
+    // 小记表单值
+    const formValue = ref({
+        title:'',
+        top:false,
+        tags:[], //标签
+        content:[], //待办事项数组
+        finished: computed( () => {
+            const contents = formValue.value.content;
+            console.log(contents)
+            if(contents.length ===0) return false;
+            return contents.every(item => item.checked)
+        })
+    })
+
+    const finished = computed( () => {
+        const contents = formValue.value.content;
+        if(contents.length ===0) return false;
+        return contents.every(item => item.checked)
+    })
+
+  
     //增加标签输入框的值
     const tagsInputValue = ref(''); 
     // 标签数组
@@ -173,8 +193,8 @@
     const InputRef = ref(null);
     // 删除标签
     const handleClose = (tag) => {
-        dynamicTags.value.splice(dynamicTags.value.indexOf(tag), 1);
-        if(dynamicTags.value.length <= 5){
+        formValue.value.tags.splice(formValue.value.tags.indexOf(tag), 1);
+        if(formValue.value.tags.length <= 5){
             tagsDisabledBtn.value = false;
         }
     }
@@ -188,33 +208,24 @@
     // 增加标签输入框失去焦点--增加
     const handleInputConfirm = () => {
         if (tagsInputValue.value) {
-            dynamicTags.value.push(tagsInputValue.value);
+            formValue.value.tags.push(tagsInputValue.value);
         }
         tagsInputVisible.value = false;
         tagsInputValue.value = '';
-        if(dynamicTags.value.length >= 5){
+        if(formValue.value.tags.length >= 5){
             tagsDisabledBtn.value = true;
         }
     }
 
-    // 创建一个代办事项
-    const oncreateTuDoThing = {
-        checked:false,  //是否已经完成
-        thing:''  // 待办事项
-    }
-
-    // 待办事件数组
-    const toDuThingContent = ref([]);
-
     // 增加待办事件
     const addTuDoThing = (index) => {
         if(index === 0){
-            toDuThingContent.value.push({
+            formValue.value.content.push({
                 checked:false,  //是否已经完成
                 thing:''  // 待办事项
             });
         }else{
-            toDuThingContent.value.splice(index,0,{
+            formValue.value.content.splice(index,0,{
                 checked:false,  //是否已经完成
                 thing:''  // 待办事项
             });
@@ -222,7 +233,7 @@
     }
     // 删除待办事件
     const removeTuDoThing = (index) => {   
-        toDuThingContent.value.splice(index,1);  
+        formValue.value.content.splice(index,1);  
     }
 
 </script>
@@ -288,6 +299,7 @@
         max-height: 210px;
         overflow: hidden;
         overflow-y: auto;
+        padding: 0px 11px;
     }
     
 </style>
