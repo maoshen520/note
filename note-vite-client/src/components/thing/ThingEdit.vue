@@ -84,7 +84,7 @@
                                             bg
                                             @click="showInput"
                                         >
-                                            +
+                                            <el-icon size="14"><Plus /></el-icon>
                                         </el-button>
                                     </el-space>
                                 </el-col>
@@ -95,22 +95,38 @@
 
                     <!-- 内容 -->
                     <div class="content">
-                        <el-row v-for="item in 7" :key="item" style="margin-bottom:10px ;">
-                            <el-col :span="2">
-                                <el-checkbox v-model="checked1" label="" size="large" />
-                            </el-col>
-                            <el-col :span="17">
-                                <el-input  placeholder="请输入内容" />
-                            </el-col>
-                            <el-col :span="5">
-                                <el-button circle color="#EAE9EA" style="margin-left:15px;">
-                                    <el-icon size="18" color="#74787E"><CirclePlusFilled /></el-icon>
-                                </el-button>
-                                <el-button circle color="#EAE9EA">
-                                    <el-icon size="18" color="#74787E"><DeleteFilled /></el-icon>
-                                </el-button>
-                            </el-col>
-                        </el-row>  
+
+                        <el-button 
+                            v-if="toDuThingContent.length == 0"
+                            style="width: 100%;font-size: 14px;margin-bottom: 10px;border-style: dashed;"
+                            class="button-new-tag dashed" 
+                            plain 
+                            @click="addTuDoThing(0)"
+                        >
+                            <el-icon size="14"><Plus /></el-icon>
+                            增加一个待办事件
+                        </el-button>
+
+                        <template v-else>
+                            <el-row v-for="(item,index) in toDuThingContent" :key="item" style="margin-bottom:10px ;">
+                                <el-col :span="2">
+                                    <el-checkbox v-model="item.checked" label="" size="large" />
+                                </el-col>
+                                <el-col :span="17">
+                                    <el-input v-model="item.thing"  placeholder="请输入内容" />
+                                </el-col>
+                                <el-col :span="5">
+                                    <!-- 增加 -->
+                                    <el-button circle color="#EAE9EA" style="margin-left:15px;" @click="addTuDoThing(index+1)">
+                                        <el-icon size="16" color="#74787E"><CirclePlusFilled /></el-icon>
+                                    </el-button>
+                                    <!-- 删除 -->
+                                    <el-button circle color="#EAE9EA" @click="removeTuDoThing(index)">
+                                        <el-icon size="16" color="#74787E"><DeleteFilled /></el-icon>
+                                    </el-button>
+                                </el-col>
+                            </el-row>  
+                        </template>
                     </div>
                 </el-card>
             </el-watermark>
@@ -126,7 +142,7 @@
 
 <script setup>
     import {ref,nextTick} from "vue";
-    import { CirclePlusFilled,DeleteFilled} from '@element-plus/icons-vue';  //图标
+    import { CirclePlusFilled,DeleteFilled,Plus} from '@element-plus/icons-vue';  //图标
 
     // // 父组件传值
     // const propsData = defineProps({
@@ -182,10 +198,32 @@
     }
 
     // 创建一个代办事项
-    const oncreateTuDoThing = () => ({
+    const oncreateTuDoThing = {
         checked:false,  //是否已经完成
         thing:''  // 待办事项
-    })
+    }
+
+    // 待办事件数组
+    const toDuThingContent = ref([]);
+
+    // 增加待办事件
+    const addTuDoThing = (index) => {
+        if(index === 0){
+            toDuThingContent.value.push({
+                checked:false,  //是否已经完成
+                thing:''  // 待办事项
+            });
+        }else{
+            toDuThingContent.value.splice(index,0,{
+                checked:false,  //是否已经完成
+                thing:''  // 待办事项
+            });
+        }   
+    }
+    // 删除待办事件
+    const removeTuDoThing = (index) => {   
+        toDuThingContent.value.splice(index,1);  
+    }
 
 </script>
 
@@ -207,7 +245,7 @@
     }
     .button-new-tag{
         font-size:18px;
-
+        border-style: dashed;
     }
 
     // 多选框样式
@@ -231,7 +269,7 @@
     // 增加标签按钮样式
     .button-new-tag{
         --el-button-hover-border-color:#F74800;
-        --el-button-hover-text-color:#F74800;
+        --el-button-hover-text-color:#F74800 ;
         --el-button-active-border-color:#F74800;
     }
 
@@ -249,7 +287,7 @@
     .content{
         max-height: 210px;
         overflow: hidden;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
     
 </style>
