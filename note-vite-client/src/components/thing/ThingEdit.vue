@@ -6,10 +6,11 @@
             :close-on-press-escape="false"
             :show-close="false"
             :width="500"
+            @close="resetEditThing()"
         >   
 
             <!-- 骨架屏 -->
-            <el-skeleton v-show="false" animated>
+            <el-skeleton v-show="loading" animated>
                 <template #template>
                     <el-card class="" shadow="never">
                         <!-- 头部 -->
@@ -73,6 +74,7 @@
 
             <!-- 水印 -->
             <el-watermark 
+                v-show="!loading"
                 :width="500"
                 :height="500" 
                 :content="formValue.isFinished ? '已完成' : ''" 
@@ -179,7 +181,7 @@
                                 </el-col>
                                 <!-- 输入框 -->
                                 <el-col :span="16">
-                                    <el-input v-model="item.thing"  placeholder="请输入..." style="--el-input-border:none"/>
+                                    <el-input v-model="item.thing"  placeholder="请输入..." style="--el-input-border:none;"/>
                                 </el-col>
                                 <el-col :span="6">
                                     <!-- 增加 -->
@@ -199,7 +201,7 @@
             <template #footer >
                 <div>
                     <el-button text bg style="width:calc((100% - 12px) / 2)" @click="dialogVisible = false">取消</el-button>
-                    <el-button class="orange-border-btn" gb style="width:calc((100% - 12px) / 2)" @click="saveThing()">保存</el-button>   
+                    <el-button v-show="!loading" class="orange-border-btn" gb style="width:calc((100% - 12px) / 2)" @click="saveThing()">保存</el-button>   
                 </div>
             </template>
         </el-dialog>
@@ -220,10 +222,12 @@
 
     // //自定义事件--彻底删除--删除--取消
     // const emits = defineEmits(['delect','cancel']) 
-
-    const dialogVisible = ref(true);
-
-    const value2 = ref(true)
+    
+    //是否显示模态框
+    const dialogVisible = ref(false);   
+    
+    //是否加载中---显示骨架屏
+    const loading = ref(true);  
 
     // 小记表单值
     const formValue = ref({
@@ -238,13 +242,6 @@
         })
     })
 
-    const finished = computed( () => {
-        const contents = formValue.value.content;
-        if(contents.length ===0) return false;
-        return contents.every(item => item.checked)
-    })
-
-  
     //增加标签输入框的值
     const tagsInputValue = ref(''); 
     // 标签数组
@@ -330,12 +327,40 @@
                 // message: h('i', { style: 'color: teal' }, 'This is a reminder'),
                 message: html,
             })
-        }
-        
-
-
-        
+        } 
     }
+
+    /**
+     * 显示编辑小记的模态框
+     * @param {number} id  小记编号（无值--新增小记   有值---编辑小记）
+     */
+    const showDialogVisible = id => {
+        dialogVisible.value = true;
+        loading.value = true;
+
+        if(id === null){
+            console.log('新增小记')
+            loading.value = false;
+        }else{
+            console.log('编辑小记',id)
+            setTimeout(() => {
+                loading.value = false;
+            },3000)
+        }
+    }
+
+    // 重置
+    const resetEditThing = () => {
+        formValue.value.title = '';
+        formValue.value.top = false;
+        formValue.value.tags = [];
+        formValue.value.content = [];
+    }
+
+
+
+    // 将哪些函数导出
+    defineExpose({showDialogVisible})
 
 </script>
 
@@ -350,10 +375,11 @@
         box-shadow: none;
     }
 
+    // 标签输入框样式
     .input-new-tag{
         width: 90px;
-        // margin-left: 10px;
         vertical-align: bottom;
+        margin-left: 8px;
     }
     .button-new-tag{
         font-size:18px;
@@ -403,6 +429,7 @@
         padding: 0px 11px;
     }
 
+    // 保存提示文字样式
     .saveErrorText{
         font-size: 16px;
         color: #FF0000;

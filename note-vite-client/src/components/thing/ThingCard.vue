@@ -78,6 +78,7 @@
                                         text 
                                         size="small" 
                                         style="padding: 0px;margin-left: 8px;"
+                                        @click="emits('edit')"
                                     >
                                         <el-icon size="16"><EditPen /></el-icon>
                                     </el-button>    
@@ -129,7 +130,7 @@
     })
 
     // 自定义事件
-    const emits = defineEmits(['changeStatus','delete']);
+    const emits = defineEmits(['changeStatus','delete','edit']);
 
     //禁用置顶/取消置顶按钮
     const topBtnDisabled = ref(false);  

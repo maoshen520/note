@@ -4,7 +4,7 @@
         <el-card class="box-card" shadow="never">
             <div class="card-header">
                 <h3>小记列表</h3>
-                <el-button color="#FFCCA9" style="color: #F74800;" plain>新增小记</el-button>
+                <el-button color="#FFCCA9" style="color: #F74800;" plain @click="editThingRef.showDialogVisible(null)">新增小记</el-button>
             </div>
         </el-card>
 
@@ -75,6 +75,7 @@
                                 :time="item.updateTime"
                                 @changeStatus="getThingList()"
                                 @delete="showDeleteRemindDialog"
+                                @edit="editThingRef.showDialogVisible(item.id)"
                             ></ThingCard>
                         </template>
                     </TransitionGroup>
@@ -93,7 +94,8 @@
                     @cancel="delectRemind.show = false"
                 ></deleteRemindDialog>
 
-                <ThingEdit></ThingEdit>
+                <!-- 编辑小记 -->
+                <ThingEdit ref="editThingRef"></ThingEdit>
 
         </el-card>
     </div>
@@ -248,6 +250,8 @@
         }
     }
     
+    // 编辑小记模态框组件的引用
+    const editThingRef = ref(null)
 
 </script>
 
