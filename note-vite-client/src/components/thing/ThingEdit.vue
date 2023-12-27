@@ -7,6 +7,70 @@
             :show-close="false"
             :width="500"
         >   
+
+            <!-- 骨架屏 -->
+            <el-skeleton v-show="false" animated>
+                <template #template>
+                    <el-card class="" shadow="never">
+                        <!-- 头部 -->
+                        <template #header>
+                            <div class="card-header">
+                                <div class="card-list-title" >
+                                    <el-skeleton-item style="height: 25px;"/>    
+                                </div> 
+
+                                <!-- 是否置顶 -->
+                                <div style="margin-top:10px;padding: 0px 11px;">
+                                    <el-row>
+                                        <el-col :span="2">
+                                            <el-skeleton-item style="height: 25px;"/>
+                                        </el-col>
+                                        <el-col :span="1">
+                                            
+                                        </el-col>
+                                        <el-col :span="3">
+                                            <el-skeleton-item style="height: 25px;"/>
+                                        </el-col>
+                                    </el-row>
+                                </div>
+
+                                <!-- 标签 -->
+                                <div style="margin-top:10px;padding: 0px 11px;">
+                                    <el-row>
+                                        <el-col :span="2">
+                                            <el-skeleton-item style="height: 25px;"/>
+                                        </el-col>
+                                        <el-col :span="1"></el-col>
+                                        <el-col :span="3">
+                                            <el-skeleton-item style="height: 25px;"/>
+                                        </el-col>
+                                        <el-col :span="1"></el-col>
+                                        <el-col :span="3">
+                                            <el-skeleton-item style="height: 25px;"/>
+                                        </el-col>
+                                        <el-col :span="1"></el-col>
+                                        <el-col :span="3">
+                                            <el-skeleton-item style="height: 25px;"/>
+                                        </el-col>
+                                        <el-col :span="1"></el-col>
+                                        <el-col :span="3">
+                                            <el-skeleton-item style="height: 25px;"/>
+                                        </el-col>
+                                    </el-row>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- 内容 -->
+                        <div>
+                            <el-skeleton-item style="height: 25px;margin-bottom: 10px;"/>
+                            <el-skeleton-item style="height: 25px;margin-bottom: 10px;"/>
+                        </div>   
+                    </el-card> 
+
+                </template>
+            </el-skeleton>
+
             <!-- 水印 -->
             <el-watermark 
                 :width="500"
@@ -52,8 +116,8 @@
                                     <el-space wrap>
                                         <!-- 标签列表 -->
                                         <el-tag
-                                            v-for="tag in formValue.tags"
-                                            :key="tag"
+                                            v-for="(tag,index) in formValue.tags"
+                                            :key="index+'标签'"
                                             class="mx-1"
                                             effect="light"
                                             type="info"
@@ -74,6 +138,7 @@
                                             @keyup.enter="handleInputConfirm"
                                             @blur="handleInputConfirm"
                                         />
+
                                         <!-- 增加标签按钮 -->
                                         <el-button 
                                             v-else 
@@ -107,7 +172,7 @@
                         </el-button>
 
                         <template v-else>
-                            <el-row v-for="(item,index) in formValue.content" :key="item" style="margin-bottom:10px ;">
+                            <el-row v-for="(item,index) in formValue.content" :key="index+'事件'" style="margin-bottom:10px ;">
                                 <!-- 复选框 -->
                                 <el-col :span="2">
                                     <el-checkbox v-model="item.checked" label="" size="large" />
@@ -131,10 +196,10 @@
                     </div>
                 </el-card>
             </el-watermark>
-            <template #footer>
+            <template #footer >
                 <div>
                     <el-button text bg style="width:calc((100% - 12px) / 2)" @click="dialogVisible = false">取消</el-button>
-                    <el-button class="orange-border-btn" gb style="width:calc((100% - 12px) / 2)" @click="dialogVisible = false">保存</el-button>   
+                    <el-button class="orange-border-btn" gb style="width:calc((100% - 12px) / 2)" @click="saveThing()">保存</el-button>   
                 </div>
             </template>
         </el-dialog>
@@ -142,7 +207,7 @@
 </template>
 
 <script setup>
-    import {ref,nextTick, computed} from "vue";
+    import {ref,nextTick, computed,h} from "vue";
     import { CirclePlusFilled,DeleteFilled,Plus} from '@element-plus/icons-vue';  //图标
 
     // // 父组件传值
@@ -166,9 +231,8 @@
         top:false,
         tags:[], //标签
         content:[], //待办事项数组
-        finished: computed( () => {
+        isFinished: computed( () => {
             const contents = formValue.value.content;
-            console.log(contents)
             if(contents.length ===0) return false;
             return contents.every(item => item.checked)
         })
@@ -236,6 +300,43 @@
         formValue.value.content.splice(index,1);  
     }
 
+    // 保存小记
+    const saveThing = () => {
+        let html = '';
+        let num = 0;
+        
+        if(formValue.value.title === ''){
+            num += 1;
+            html += '<div style="font-size: 16px;color: #FF0000;margin:10px 0px">'+ num +'：请设置编辑小记的标题</div>'
+        }
+
+        if(formValue.value.tags.length === 0){
+            num += 1;
+            html += '<div style="font-size: 16px;color: #FF0000;margin:10px 0px">'+ num +'：请设置编辑小记的标签</div>'
+        }
+
+        if(formValue.value.content.length === 0){
+            num += 1;
+            html += '<div style="font-size: 16px;color: #FF0000;margin:10px 0px">'+ num +'：请设置编辑小记的待办事项</div>'
+        }
+
+        if(html === ''){
+
+        }else{
+            ElNotification({
+                title: '编辑小记保存提醒',
+                type: 'error',
+                dangerouslyUseHTMLString: true,
+                // message: h('i', { style: 'color: teal' }, 'This is a reminder'),
+                message: html,
+            })
+        }
+        
+
+
+        
+    }
+
 </script>
 
 <style lang="less" scoped>
@@ -300,6 +401,15 @@
         overflow: hidden;
         overflow-y: auto;
         padding: 0px 11px;
+    }
+
+    .saveErrorText{
+        font-size: 16px;
+        color: #FF0000;
+    }
+
+    /deep/.el-tag.is-closable{
+        margin-left: 8px;
     }
     
 </style>
