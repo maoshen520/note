@@ -208,4 +208,45 @@ public class ThingServiceImpl implements IThingService {
         }
     }
 
+    /**
+     * 新增小记
+     *
+     * @param thing 小记信息（标题、是否置顶、标签、内容、用户id、是否完成、时间、最后更新时间）
+     * @throws ServiceException //业务异常
+     */
+    @Override
+    public void newCreateThing(Thing thing) throws ServiceException {
+        //新增小记
+        int count = 0;
+        try {
+            count = thingDao.insert(thing);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServiceException("新增小记失败", EventCode.THING_CREATE_EXCEPTION);
+        }
+        if (count != 1) {
+            throw new ServiceRollbackException("新增小记失败",EventCode.THING_CREATE_FAILED);
+        }
+
+        //新增小记日志记录（新增业务）
+        NoteThingLog log = NoteThingLog.builder()
+                .time(thing.getUpdateTime())
+                .event(EventCode.THING_CREATE_SUCCESS)
+                .desc("新增小记")
+                .thingId(thing.getId())
+                .userId(thing.getUserId())
+                .build();
+
+        try {
+            count = noteThingLogDao.insert(log);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServiceRollbackException("新增小记失败", EventCode.THING_CREATE_EXCEPTION);
+        }
+
+        if (count != 1){
+            throw new ServiceRollbackException("新增小记失败", EventCode.THING_CREATE_FAILED);
+        }
+    }
+
 }

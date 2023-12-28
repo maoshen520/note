@@ -37,4 +37,10 @@ public interface IThingService {
      */
     void deleteThingById(boolean complete, int thingId, int userId, boolean isRecycleBin) throws ServiceException;
 
+    /**
+     * 新增小记
+     * @param thing  小记信息（标题、是否置顶、标签、内容、用户id、是否完成、时间、最后更新时间）
+     * @throws ServiceException  //业务异常
+     */
+    void newCreateThing(Thing thing) throws ServiceException;
 }

@@ -58,6 +58,11 @@ public class EventCode {
     public static final String PARAM_THING_ID_WRONG = "P_007";  //小记编号参数有误
     public static final String PARAM_THING_COMPLETE_WRONG = "P_008";  //删除参数有误（是否为彻底删除的参数）
     public static final String PARAM_THING_RECYCLE_BIN_WRONG = "P_009";  //删除参数有误（是否为回收站操作的参数）
+    public static final String PARAM_THING_TITLE_WRONG = "P_010";  //小记标题参数有误
+    public static final String PARAM_THING_TOP_WRONG = "P_011";  //小记置顶参数有误
+    public static final String PARAM_THING_TAGS_WRONG = "P_012";  //小记标签参数有误
+    public static final String PARAM_THING_CONTENT_WRONG = "P_013";  //小记待办事项参数有误
+    public static final String PARAM_THING_FINISHED_WRONG = "P_014";  //小记完成参数有误
 
 
     //=========================sql  redis 的状态码  =========================
@@ -72,4 +77,8 @@ public class EventCode {
     public static final String THING_CANCET_tOP_FAILED = "T_004";  //取消置顶小记失败
     public static final String THING_DELETE_SUCCESS = "T_005";  //删除小记成功
     public static final String THING_COMPLETE_DELETE_SUCCESS = "T_006";  //彻底删除小记成功
+    public static final String THING_CREATE_SUCCESS = "T_007";  //新增小记成功
+    public static final String THING_CREATE_EXCEPTION = "T_008";  //新增小记异常
+    public static final String THING_CREATE_FAILED = "T_009";  //新增小记失败
+
 }

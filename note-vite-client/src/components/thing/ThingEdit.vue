@@ -8,7 +8,6 @@
             :width="500"
             @close="resetEditThing()"
         >   
-
             <!-- 骨架屏 -->
             <el-skeleton v-show="loading" animated>
                 <template #template>
