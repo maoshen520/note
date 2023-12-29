@@ -73,7 +73,7 @@
                                 :top="!!item.top"
                                 :tags="item.tags.split(',')"
                                 :time="item.updateTime"
-                                @changeStatus="getThingList()"
+                                @changeStatus="getThingList(false)"
                                 @delete="showDeleteRemindDialog"
                                 @edit="editThingRef.showDialogVisible(item.id)"
                             ></ThingCard>
@@ -95,7 +95,11 @@
                 ></deleteRemindDialog>
 
                 <!-- 编辑小记 -->
-                <ThingEdit ref="editThingRef"></ThingEdit>
+                <ThingEdit 
+                    ref="editThingRef"
+                    @save="getThingList"
+                >
+                </ThingEdit>
 
         </el-card>
     </div>
@@ -113,9 +117,13 @@
 
     const isLoad = ref(false);  //请求中显示骨架
 
+    // 是否是新增小记
+    const isNewCreate = ref(false);
+
     // 获取小记列表数据
     const things = ref([]);   //小记列表
-    const getThingList = async () => {
+    const getThingList = async (newCreate) => {
+        isNewCreate.value = newCreate;
         //判断用户的登录状态
         const userToken = await getUserToken();
         const { data: responseData } = await noteBaseRequest.get(
@@ -149,7 +157,7 @@
         }
 
     }
-    getThingList();
+    getThingList(false);
 
     //显示动画之前的初始位置 greenSock
     const beforeEnter = (el) => {
@@ -164,7 +172,7 @@
             y: 0,  //偏移量
             opacity: 1,  //透明度
             duration: 0.5,  //时间--秒
-            delay:el.dataset.index * 0.12,
+            delay:() => (isNewCreate ? 0 : el.dataset.index * 0.12),  //延迟动画
             onComplete: done  //动画完成时调用的函数
         })
     }
@@ -237,7 +245,7 @@
                 message:responseData.message,
                 type: 'success',
             });
-            getThingList(); 
+            getThingList(false); 
         }else{
             ElMessage({
                 message: responseData.message,

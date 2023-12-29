@@ -118,7 +118,7 @@
                                         <!-- 标签列表 -->
                                         <el-tag
                                             v-for="(tag,index) in formValue.tags"
-                                            :key="index+'标签'"
+                                            :key="index"
                                             class="mx-1"
                                             effect="light"
                                             type="info"
@@ -160,7 +160,6 @@
 
                     <!-- 内容 -->
                     <div class="content">
-
                         <el-button 
                             v-if="formValue.content.length == 0"
                             style="width: 100%;font-size: 14px;border-style: dashed;"
@@ -173,7 +172,7 @@
                         </el-button>
 
                         <template v-else>
-                            <el-row v-for="(item,index) in formValue.content" :key="index+'事件'" style="margin-bottom:10px ;">
+                            <el-row v-for="(item,index) in formValue.content" :key="item" style="margin-bottom:10px ;">
                                 <!-- 复选框 -->
                                 <el-col :span="2">
                                     <el-checkbox v-model="item.checked" label="" size="large" />
@@ -210,6 +209,8 @@
 <script setup>
     import {ref,nextTick, computed,h} from "vue";
     import { CirclePlusFilled,DeleteFilled,Plus} from '@element-plus/icons-vue';  //图标
+    import {getUserToken,loginInvalid} from "@/utils/userLoginUtils.js";
+    import {noteBaseRequest} from "@/request/note_request.js";
 
     // // 父组件传值
     // const propsData = defineProps({
@@ -219,8 +220,8 @@
     //     completeDelectBtn: {type:Boolean, default:true},  //彻底删除是否显示
     // })
 
-    // //自定义事件--彻底删除--删除--取消
-    // const emits = defineEmits(['delect','cancel']) 
+    //自定义事件
+    const emits = defineEmits(['save']) 
     
     //是否显示模态框
     const dialogVisible = ref(false);   
@@ -230,11 +231,12 @@
 
     // 小记表单值
     const formValue = ref({
-        title:'',
-        top:false,
+        id: null,   //小记编号（修改）
+        title:'',  //标题
+        top:false,  //是否置顶
         tags:[], //标签
         content:[], //待办事项数组
-        isFinished: computed( () => {
+        isFinished: computed( () => {  //是否完成
             const contents = formValue.value.content;
             if(contents.length ===0) return false;
             return contents.every(item => item.checked)
@@ -317,7 +319,11 @@
         }
 
         if(html === ''){
+            if(formValue.value.id === null){  //新增
+                newCreateThing();
+            }else{  //编辑
 
+            }
         }else{
             ElNotification({
                 title: '编辑小记保存提醒',
@@ -336,26 +342,110 @@
     const showDialogVisible = id => {
         dialogVisible.value = true;
         loading.value = true;
-
         if(id === null){
-            console.log('新增小记')
             loading.value = false;
         }else{
-            console.log('编辑小记',id)
-            setTimeout(() => {
-                loading.value = false;
-            },3000)
+            formValue.value.id = id;
+            getEditThing(id);
         }
     }
 
     // 重置
     const resetEditThing = () => {
+        formValue.value.id = null;
         formValue.value.title = '';
         formValue.value.top = false;
         formValue.value.tags = [];
         formValue.value.content = [];
     }
 
+    // 新增小记的保存
+    const newCreateThing = async () => {
+        //判断用户的登录状态
+        const userToken = await getUserToken();
+
+        const thingObj = formValue.value;
+        const { data: responseData } = await noteBaseRequest.post(
+            "/thing/create",
+            {   
+                title: thingObj.title,
+                top: thingObj.top,
+                tags: thingObj.tags.join(),
+                content: JSON.stringify(thingObj.content),
+                finished: thingObj.isFinished,
+            },
+            {
+                headers: {
+                    userToken:userToken
+                }
+            }
+        ).catch(() => {
+            ElMessage({
+                message: '新增小记请求失败',
+                type: 'error',
+            })
+            throw '新增小记请求失败'
+        })
+        if(responseData.success){
+            ElMessage({
+                message: responseData.message,
+                type: 'success',
+            })
+            dialogVisible.value = false;
+            emits('save', true)
+        }else{
+            ElMessage({
+                message: responseData.message,
+                type: 'error'
+            });
+            // 登录已失效
+            if(responseData.code == 'L_008'){
+                loginInvalid(true);
+            }
+        }
+    }
+
+    // 获取小记信息
+    const getEditThing = async (thingId) => {
+        //判断用户的登录状态
+        const userToken = await getUserToken();
+
+        const { data: responseData } = await noteBaseRequest.get(
+            "/thing/edit",
+            {   
+                params:{
+                    thingId
+                },
+                headers: {
+                    userToken:userToken
+                }
+            }
+        ).catch(() => {
+            ElMessage({
+                message: '获取小记请求失败',
+                type: 'error',
+            })
+            throw '获取小记请求失败'
+        })
+        console.log(responseData)
+        if(responseData.success){
+            loading.value = false;
+            const editThing = responseData.data;
+            formValue.value.title = editThing.title;
+            formValue.value.top = !!editThing.top;
+            formValue.value.tags = editThing.tags.split(',');
+            formValue.value.content = JSON.parse(editThing.content);
+        }else{
+            ElMessage({
+                message: responseData.message,
+                type: 'error'
+            });
+            // 登录已失效
+            if(responseData.code == 'L_008'){
+                loginInvalid(true);
+            }
+        }
+    }
 
 
     // 将哪些函数导出

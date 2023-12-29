@@ -249,4 +249,37 @@ public class ThingServiceImpl implements IThingService {
         }
     }
 
+    /**
+     * 获取编辑的小记信息
+     *
+     * @param thingId 小记编号
+     * @param userId  用户编号
+     * @throws ServiceException 业务异常
+     */
+    @Override
+    public Thing getEditThing(int thingId, int userId) throws ServiceException {
+        //封装查询的条件
+        //判断小记是否存在
+        //将查到小记返回出去
+
+        QueryWrapper wrapper = QueryWrapper.create()
+                .select(THING.TITLE, THING.TOP, THING.TAGS, THING.CONTENT)
+                .where(THING.ID.eq(thingId))
+                .and(THING.USER_ID.eq(userId))
+                .and(THING.STATUS.eq(1));
+
+        Thing thing = null;
+        try {
+            thing = thingDao.selectOneByQuery(wrapper);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServiceException("查询小记异常", EventCode.SELECT_EXCEPTION);
+        }
+        if(thing == null){
+            throw new ServiceException("小记不存在，请刷新后再试", EventCode.SELECT_NONE);
+        }
+
+        return thing;
+    }
+
 }

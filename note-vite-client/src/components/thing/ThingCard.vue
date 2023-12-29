@@ -22,7 +22,7 @@
                                 class="box-item"
                                 effect="light"
                                 :content="title"
-                                placement="top"
+                                placement="top-start"
                                 :offset="5"
                             >   
                                 <!-- 标题 -->
