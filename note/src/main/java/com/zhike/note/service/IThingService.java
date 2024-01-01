@@ -8,6 +8,7 @@ import java.util.List;
 
 //业务接口：小记的业务   --去到impl实现业务
 public interface IThingService {
+
     /**
      * 获取用户正常的小记
      * @param userId
@@ -52,4 +53,11 @@ public interface IThingService {
      * @throws ServiceException  业务异常
      */
     Thing getEditThing(int thingId, int userId) throws ServiceException;
+
+    /**
+     * 修改小记
+     * @param thing  小记信息（标题、是否置顶、标签、内容、用户id、是否完成、最后更新时间, id）
+     * @throws ServiceException  //业务异常
+     */
+    void updateThing(Thing thing) throws ServiceException;
 }

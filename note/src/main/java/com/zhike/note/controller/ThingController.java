@@ -232,4 +232,66 @@ public class ThingController {
         }
     }
 
+    /**
+     * 修改小记
+     * 请求地址 url:http://127.0.0.1:18081/zhike-notes/thing/update
+     * @param thingId  小记编号
+     * @param title 标题
+     * @param top  是否置顶
+     * @param tags  标签
+     * @param content  待办事项
+     * @param finished  是否完成
+     * @param userToken  redis key 登录用户的信息
+     * @return  响应数据
+     */
+    @PostMapping("/update")
+    public ResponseData updateThing(int thingId,String title, boolean top, String tags, String content, boolean finished,@RequestHeader String userToken) {
+
+        try {
+            // 判断登录参数
+            User user = TokenValidateUtil.validateUserToken(userToken, redisTemplate);
+
+            // 验证小记编号参数
+            if (Validator.isEmpty(thingId)) return new ResponseData(false, "小记编号参数有误", EventCode.PARAM_THING_ID_WRONG);
+
+            // 验证小记标题参数
+            if (Validator.isEmpty(title)) return new ResponseData(false, "小记标题参数有误", EventCode.PARAM_THING_TITLE_WRONG);
+
+            // 验回小记置顶
+            if (Validator.isEmpty(top)) return new ResponseData(false, "小记置顶参数有误", EventCode.PARAM_THING_TOP_WRONG);
+
+            //验证小记标签参数
+            if (Validator.isEmpty(tags)) return new ResponseData(false, "小记标签参数有误", EventCode.PARAM_THING_TAGS_WRONG);
+
+            //验证小记待办事项参数
+            if (Validator.isEmpty(content)) return new ResponseData(false, "小记待办事项参数有误", EventCode.PARAM_THING_CONTENT_WRONG);
+
+            //验证小记完成参数
+            if (Validator.isEmpty(finished)) return new ResponseData(false, "小记完成参数有误", EventCode.PARAM_THING_FINISHED_WRONG);
+
+            //时间
+            Date localTime = new Date();
+
+            //创建对象
+            Thing thing = Thing.builder()
+                    .id(thingId)
+                    .updateTime(localTime)
+                    .title(title)
+                    .tags(tags)
+                    .content(content)
+                    .userId(user.getId())
+                    .finished(finished ? 1 : 0)
+                    .top(top ? 1 : 0)
+                    .build();
+
+            //调用修改小记业务
+            thingService.updateThing(thing);
+            return new ResponseData(true,"修改小记成功", EventCode.UPDATE_SUCCESS);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return new ResponseData(false,e.getMessage(), e.getCode());
+        }
+    }
+
+
 }

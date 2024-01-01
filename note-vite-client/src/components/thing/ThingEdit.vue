@@ -320,9 +320,9 @@
 
         if(html === ''){
             if(formValue.value.id === null){  //新增
-                newCreateThing();
+                createOrupdate(true);
             }else{  //编辑
-
+                createOrupdate(false);
             }
         }else{
             ElNotification({
@@ -359,21 +359,44 @@
         formValue.value.content = [];
     }
 
-    // 新增小记的保存
-    const newCreateThing = async () => {
+    // 新增或修改小记的保存
+    const createOrupdate = async (type) => {
         //判断用户的登录状态
         const userToken = await getUserToken();
 
         const thingObj = formValue.value;
+
+        let url = '';
+
+        let obj = {   
+            title: thingObj.title,
+            top: thingObj.top,
+            tags: thingObj.tags.join(),
+            content: JSON.stringify(thingObj.content),
+            finished: thingObj.isFinished,
+        };
+
+        let errorText = '';
+
+        if(type){  //新增
+            url = '/thing/create';
+            errorText = '新增小记请求失败';
+        }else{  //编辑
+            url = '/thing/update';
+            obj.thingId = formValue.value.id;
+            errorText = '修改小记请求失败';
+        }
+
+        // const { data: responseData } = await noteBaseRequest({
+        //     method:'post/get',
+        //     url,
+        //     date:obj,
+        //     headers: {userToken}
+        // }).catch(() => {})
+
         const { data: responseData } = await noteBaseRequest.post(
-            "/thing/create",
-            {   
-                title: thingObj.title,
-                top: thingObj.top,
-                tags: thingObj.tags.join(),
-                content: JSON.stringify(thingObj.content),
-                finished: thingObj.isFinished,
-            },
+            url,
+            obj,
             {
                 headers: {
                     userToken:userToken
@@ -381,10 +404,10 @@
             }
         ).catch(() => {
             ElMessage({
-                message: '新增小记请求失败',
+                message: errorText,
                 type: 'error',
             })
-            throw '新增小记请求失败'
+            throw errorText;
         })
         if(responseData.success){
             ElMessage({
@@ -392,7 +415,7 @@
                 type: 'success',
             })
             dialogVisible.value = false;
-            emits('save', true)
+            emits('save', type)
         }else{
             ElMessage({
                 message: responseData.message,
@@ -446,7 +469,6 @@
             }
         }
     }
-
 
     // 将哪些函数导出
     defineExpose({showDialogVisible})
