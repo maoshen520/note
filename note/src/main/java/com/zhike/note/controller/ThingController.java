@@ -38,12 +38,14 @@ public class ThingController {
     /**
      * 获取用户的小记列表
      * 请求地址 url:http://127.0.0.1:18081/zhike-notes/thing/list
+     * @param search  查询关键词（标题含有或者标签含有）
+     * @param filter  过滤【null:默认， 0：只查未完成， 1：只查已完成】
      * @param userToken
 
      * @return  响应数据{user, userToken}
      */
     @GetMapping("/list")
-    public ResponseData getUserThingList(@RequestHeader String userToken) {
+    public ResponseData getUserThingList(String search, Integer filter, @RequestHeader String userToken) {
 
 //        //验证userToken参数是否为空
 //        if(Validator.isEmpty(userToken)){
@@ -73,7 +75,7 @@ public class ThingController {
             User user = TokenValidateUtil.validateUserToken(userToken, redisTemplate);
 
             //调用用户的小记列表业务
-            List<Thing> things = thingService.getUserNormalThing(user.getId());
+            List<Thing> things = thingService.getUserNormalThing(search, filter, user.getId());
             return new ResponseData(true,"获取成功", EventCode.SELECT_SUCCESS, things);
         } catch (ServiceException e) {  //执行 List<Thing> things = thingService.getUserNormalThing(user.getId()); 业务报错，抛出ServiceException异常
             e.printStackTrace();

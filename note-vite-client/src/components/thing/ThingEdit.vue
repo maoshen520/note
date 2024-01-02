@@ -199,7 +199,7 @@
             <template #footer >
                 <div>
                     <el-button text bg style="width:calc((100% - 12px) / 2)" @click="dialogVisible = false">取消</el-button>
-                    <el-button v-show="!loading" class="orange-border-btn" gb style="width:calc((100% - 12px) / 2)" @click="saveThing()">保存</el-button>   
+                    <el-button v-show="!loading" :disabled="saveBtnDisabled" class="orange-border-btn" gb style="width:calc((100% - 12px) / 2)" @click="saveThing()">保存</el-button>   
                 </div>
             </template>
         </el-dialog>
@@ -207,10 +207,22 @@
 </template>
 
 <script setup>
-    import {ref,nextTick, computed,h} from "vue";
+    import {ref,nextTick, computed,h, onBeforeUnmount} from "vue";
     import { CirclePlusFilled,DeleteFilled,Plus} from '@element-plus/icons-vue';  //图标
     import {getUserToken,loginInvalid} from "@/utils/userLoginUtils.js";
+    import {disabledBtn} from "@/utils/disabledBtn.js";
     import {noteBaseRequest} from "@/request/note_request.js";
+
+    import bus from 'vue3-eventbus'; 
+    // 监听知否触发了新建小记事件----显示新建小记窗口
+    bus.on('newCreateThing', () => {
+        showDialogVisible(null);
+    })
+
+    // 组件卸载之前，移除监听事件
+    onBeforeUnmount(() => {
+        bus.off('newCreateThing');  //停止监听新建小记事件
+    })
 
     // // 父组件传值
     // const propsData = defineProps({
@@ -320,9 +332,9 @@
 
         if(html === ''){
             if(formValue.value.id === null){  //新增
-                createOrupdate(true);
+                createOrUpdate(true);
             }else{  //编辑
-                createOrupdate(false);
+                createOrUpdate(false);
             }
         }else{
             ElNotification({
@@ -359,10 +371,15 @@
         formValue.value.content = [];
     }
 
+    // 保存按钮是否需要禁用
+    const saveBtnDisabled = ref(false)
+
     // 新增或修改小记的保存
-    const createOrupdate = async (type) => {
+    const createOrUpdate = async (type) => {
         //判断用户的登录状态
         const userToken = await getUserToken();
+
+        disabledBtn(saveBtnDisabled, true);
 
         const thingObj = formValue.value;
 
@@ -407,15 +424,17 @@
                 message: errorText,
                 type: 'error',
             })
+            disabledBtn(saveBtnDisabled, false, true, 2);
             throw errorText;
         })
+        disabledBtn(saveBtnDisabled, false, true, 1);
         if(responseData.success){
             ElMessage({
                 message: responseData.message,
                 type: 'success',
             })
             dialogVisible.value = false;
-            emits('save', type)
+            emits('save', false, false); // 不需要显示延迟动画
         }else{
             ElMessage({
                 message: responseData.message,

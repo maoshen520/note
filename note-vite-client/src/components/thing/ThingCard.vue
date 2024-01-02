@@ -118,6 +118,7 @@
     } from '@element-plus/icons-vue';  //图标
     import {getUserToken,loginInvalid} from "@/utils/userLoginUtils.js";
     import {noteBaseRequest} from "@/request/note_request.js";
+    import {disabledBtn} from "@/utils/disabledBtn.js";
 
     //自定义属性
     const propsData = defineProps({
@@ -157,7 +158,8 @@
         const userToken =  await getUserToken();
 
         // 禁用按钮
-        topBtnDisabled.value = true;  //禁用按钮
+        // topBtnDisabled.value = true;  //禁用按钮
+        disabledBtn(topBtnDisabled, true);
 
         const { data: responseData } = await noteBaseRequest.get(
             "/thing/top",
@@ -172,7 +174,8 @@
                 message:isTop ? '置顶小记请求失败' : '取消置顶小记请求失败',
                 type: 'error',
             })
-            topBtnDisabled.value = false; //解除禁用按钮
+            // topBtnDisabled.value = false; //解除禁用按钮
+            disabledBtn(topBtnDisabled, false, true, 1);
             throw isTop ? '置顶小记请求失败' : '取消置顶小记请求失败';
         })
         console.log(responseData)
@@ -183,18 +186,19 @@
                 type: 'success',
             });
             emits('changeStatus');  //调用父组件的请求列表的方法
-            topBtnDisabled.value= false; //解除禁用按钮
+            // topBtnDisabled.value= false; //解除禁用按钮
         }else{
             ElMessage({
                 message: responseData.message,
                 type: 'error'
             });
-            topBtnDisabled.value= false; //解除禁用按钮
+            // topBtnDisabled.value= false; //解除禁用按钮
             // 登录已失效
             if(responseData.code == 'L_008'){
                 loginInvalid(true);
             }
         }
+        disabledBtn(topBtnDisabled, false, true, 1);
     }
 
 </script>

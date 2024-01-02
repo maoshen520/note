@@ -1,5 +1,6 @@
 package com.zhike.note.service.impl;
 
+import cn.hutool.core.lang.Validator;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.zhike.note.dao.INoteThingLogDao;
 import com.zhike.note.dao.IThingDao;
@@ -8,6 +9,7 @@ import com.zhike.note.exception.ServiceRollbackException;
 import com.zhike.note.pojo.NoteThingLog;
 import com.zhike.note.pojo.Thing;
 
+import com.zhike.note.service.INoteThingLogService;
 import com.zhike.note.service.IThingService;
 
 import com.zhike.note.util.code.EventCode;
@@ -21,7 +23,6 @@ import static com.zhike.note.pojo.table.Tables.THING;
 import java.util.Date;
 import java.util.List;
 
-
 /*
 * 小记业务的实现层
 *
@@ -34,25 +35,43 @@ public class ThingServiceImpl implements IThingService {
     @Autowired
     private IThingDao thingDao;  //小记的数据库接口
 
+//    @Autowired
+//    private INoteThingLogDao noteThingLogDao;  //笔记小记日志的数据库接口
     @Autowired
-    private INoteThingLogDao noteThingLogDao;  //笔记小记日志的数据库接口
+    private INoteThingLogService noteThingLogService;  //笔记小记的业务实现层
 
     /**
      * 获取用户正常的小记
-     *
+     * @param search  查询关键词（标题含有或者标签含有）
+     * @param filter  过滤【null:默认， 0：只查未完成， 1：只查已完成】
      * @param userId
      * @return 小记对象集合
      * @throws ServiceException 业务异常
      */
     @Override
-    public List<Thing> getUserNormalThing(int userId) throws ServiceException {
+    public List<Thing> getUserNormalThing(String search, Integer filter, int userId) throws ServiceException {
 
         // WHERE `u_id` = ? AND `status` = 1 ORDER BY `finished`, `top` desc, `update_time` desc
         QueryWrapper wrapper = QueryWrapper.create()
                 .select(THING.ID, THING.TITLE, THING.TOP, THING.TAGS, THING.UPDATE_TIME, THING.FINISHED)
                 .where(THING.USER_ID.eq(userId))
-                .and(THING.STATUS.eq(1))
-                .orderBy(THING.FINISHED.asc(), THING.TOP.desc(), THING.UPDATE_TIME.desc());
+                .and(THING.STATUS.eq(1));
+
+        //  是否有关键字查询
+        if (Validator.isNotEmpty((search))){
+            wrapper.and(
+                    THING.TITLE.like(search)
+                    .or(THING.TAGS.like(search))
+            );
+        }
+
+        //是否有过来条件(finished字段)
+        if (filter != null && (filter == 0 || filter == 1)) {
+            wrapper.and(THING.FINISHED.eq(filter));
+        }
+
+        // 排序
+        wrapper.orderBy(THING.FINISHED.asc(), THING.TOP.desc(), THING.UPDATE_TIME.desc());
 
         //根据条件查询用户小记
         try {
@@ -120,18 +139,7 @@ public class ThingServiceImpl implements IThingService {
                 .userId(userId)
                 .build();
 
-        try {
-            count = noteThingLogDao.insert(log);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ServiceRollbackException(desc + "小记服务异常", EventCode.INSERT_EXCEPTION);
-        }
-
-        if (count != 1){
-            throw new ServiceRollbackException(desc + "小记服务异常", EventCode.INSERT_ERROR);
-        }
-
-
+        noteThingLogService.addOneLog(log,true);
 
     }
 
@@ -196,16 +204,7 @@ public class ThingServiceImpl implements IThingService {
                 .userId(userId)
                 .build();
 
-        try {
-            count = noteThingLogDao.insert(log);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ServiceRollbackException(desc + "失败", EventCode.INSERT_EXCEPTION);
-        }
-
-        if (count != 1){
-            throw new ServiceRollbackException(desc + "失败", EventCode.INSERT_ERROR);
-        }
+        noteThingLogService.addOneLog(log,true);
     }
 
     /**
@@ -237,16 +236,7 @@ public class ThingServiceImpl implements IThingService {
                 .userId(thing.getUserId())
                 .build();
 
-        try {
-            count = noteThingLogDao.insert(log);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ServiceRollbackException("新增小记失败", EventCode.THING_CREATE_EXCEPTION);
-        }
-
-        if (count != 1){
-            throw new ServiceRollbackException("新增小记失败", EventCode.THING_CREATE_FAILED);
-        }
+        noteThingLogService.addOneLog(log,true);
     }
 
     /**
@@ -326,16 +316,7 @@ public class ThingServiceImpl implements IThingService {
                 .userId(thing.getUserId())
                 .build();
 
-        try {
-            count = noteThingLogDao.insert(log);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ServiceRollbackException("修改小记失败", EventCode.INSERT_EXCEPTION);
-        }
-
-        if (count != 1){
-            throw new ServiceRollbackException("修改小记失败", EventCode.INSERT_ERROR);
-        }
+        noteThingLogService.addOneLog(log,true);
 
     }
 

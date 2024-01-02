@@ -4,7 +4,32 @@
         <el-card class="box-card" shadow="never">
             <div class="card-header">
                 <h3>小记列表</h3>
-                <el-button color="#FFCCA9" style="color: #F74800;" plain @click="editThingRef.showDialogVisible(null)">新增小记</el-button>
+                <el-space>
+                    <!-- 搜索 -->
+                    <div class="mt-4">
+                        <el-input
+                            v-model="searchInput"
+                            placeholder="搜索"
+                            class="input-with-select"
+                        >
+                            <template #append>
+                                <el-button class="searchBtn" color="#FFCCA9" style="color: #F74800;" plain :icon="Search" @click="getThingList(false)"/>
+                            </template>
+                        </el-input>
+                    </div>
+
+                    <div>
+                        <el-select v-model="select" placeholder="默认" style="width: 115px" @change="getThingList(false)">
+                            <el-option label="默认" value="" />
+                            <el-option label="已完成" value="1" />
+                            <el-option label="未完成" value="0" />
+                        </el-select>
+                    </div>
+
+                    <!-- 新增按钮 -->
+                    <el-button color="#FFCCA9" style="color: #F74800;" plain @click="editThingRef.showDialogVisible(null)">新增小记</el-button>
+                </el-space>
+                
             </div>
         </el-card>
 
@@ -73,7 +98,7 @@
                                 :top="!!item.top"
                                 :tags="item.tags.split(',')"
                                 :time="item.updateTime"
-                                @changeStatus="getThingList(false)"
+                                @changeStatus="getThingList(false,false)"
                                 @delete="showDeleteRemindDialog"
                                 @edit="editThingRef.showDialogVisible(item.id)"
                             ></ThingCard>
@@ -107,7 +132,7 @@
 
 <script setup>
     import {ref} from "vue"
-    import { Delete, Upload, Download, EditPen} from '@element-plus/icons-vue';  //图标
+    import { Search} from '@element-plus/icons-vue';  //图标
     import {getUserToken,loginInvalid} from "@/utils/userLoginUtils.js";
     import {noteBaseRequest} from "@/request/note_request.js";
     import ThingCard from "@/components/thing/ThingCard.vue";
@@ -117,18 +142,26 @@
 
     const isLoad = ref(false);  //请求中显示骨架
 
-    // 是否是新增小记
-    const isNewCreate = ref(false);
+    //显示小记卡片是否需要延迟动画
+    let enterDelay = true;  
+
+    //隐藏卡片是否需要显示动画
+    let hiddenAnimation = false;  
 
     // 获取小记列表数据
     const things = ref([]);   //小记列表
-    const getThingList = async (newCreate) => {
-        isNewCreate.value = newCreate;
+    const getThingList = async (ed, ha) => {
+        enterDelay = ed;
+        hiddenAnimation = ha;
         //判断用户的登录状态
         const userToken = await getUserToken();
         const { data: responseData } = await noteBaseRequest.get(
             "/thing/list",
-            {
+            {   
+                params:{
+                    search:searchInput.value,
+                    filter:select.value
+                },
                 headers: {
                     userToken:userToken
                 }
@@ -157,7 +190,8 @@
         }
 
     }
-    getThingList(false);
+    //需要显示动画
+    getThingList(true, false);
 
     //显示动画之前的初始位置 greenSock
     const beforeEnter = (el) => {
@@ -172,29 +206,48 @@
             y: 0,  //偏移量
             opacity: 1,  //透明度
             duration: 0.5,  //时间--秒
-            delay:() => (isNewCreate ? 0 : el.dataset.index * 0.12),  //延迟动画
+            delay:() => (enterDelay ? 0 : el.dataset.index * 0.12),  //延迟动画
             onComplete: done  //动画完成时调用的函数
         })
     }
 
     //隐藏动画之前的初始位置 greenSock
     const beforeLeave = (el) => {
-        gsap.set(el,{
-           opacity: 1,
-           scale: 1,
-           position: 'fixed',
-           top: 0,
-           left:'50%'
-        })
+        if(hiddenAnimation){
+            // 获取删除的元素距离父组件的左和上的位置
+            let left = el.offsetLeft;
+            let top = el.offsetTop;
+
+            //设置删除组件的属性（需要脱离文档流）
+            gsap.set(el,{
+                position: 'absilute',
+                boxShadow:'0 0 5px black',
+                zIndex: 1,
+                top: top,
+                left:left
+            })
+        }
+        
     }
     // 隐藏动画
     const leaveEvent = (el, done) => {
-        gsap.to(el,{
-            scale: 0.01,
-            opacity: 0,  //透明度
-            duration: 0.5,  //时间--秒
-            onComplete: done  //动画完成时调用的函数
-        })
+        if(hiddenAnimation){
+            let tl = gsap.timeline();  //创建时间线动画
+            tl.to(el, {
+                scale: 1.3,
+                duration: 0.3,  //时间--秒
+            }).to(el, {
+                scale: 0,
+                duration: 0.3,  //时间--秒
+                onComplete: done  //动画完成时调用的函数
+            })
+        } else {
+            gsap.to(el,{
+                duration: 0,  //时间--秒
+                onComplete: done  //动画完成时调用的函数
+            })
+        }
+        
     }
 
     // 删除提示框的对象
@@ -213,7 +266,6 @@
 
     // 删除小记   --complete 是否彻底删除
     const deleteThing =async (complete) => {
-        console.log(complete)
 
         delectRemind.value.show = false;  //关闭删除提醒框
 
@@ -245,7 +297,7 @@
                 message:responseData.message,
                 type: 'success',
             });
-            getThingList(false); 
+            getThingList(false, true); 
         }else{
             ElMessage({
                 message: responseData.message,
@@ -259,7 +311,10 @@
     }
     
     // 编辑小记模态框组件的引用
-    const editThingRef = ref(null)
+    const editThingRef = ref(null);
+
+    const searchInput = ref('');
+    const select = ref(null)
 
 </script>
 
@@ -279,6 +334,23 @@
     }
     .move-transtion{
         transition: all 0.5s;
+    }
+
+    /deep/.el-input{
+        --el-input-focus-border: #F74800 !important;
+        --el-input-focus-border-color:#F74800;
+        --el-input-hover-border-color:#F74800;
+    }
+
+    // .searchBtn:hover{
+    //     border-color: #F74800 !important;
+    //     border-top-left-radius: 0px !important;
+    //     border-bottom-left-radius: 0px !important;
+    // }
+    .el-select{
+        --el-select-focus-border: #F74800 !important;
+        --el-select-input-focus-border-color:#F74800;
+        --el-select-border-color-hover:#F74800;
     }
 
     

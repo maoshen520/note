@@ -60,6 +60,7 @@
     import { Bell, Message, Lock } from '@element-plus/icons-vue';  //图标
     import { noteBaseRequest } from "@/request/note_request";
     import { useUserStore } from "@/stores/userStore.js"
+    import {disabledBtn} from "@/utils/disabledBtn.js";
 
     // 自定义事件
     const emits = defineEmits(['changeStep','childCloseDialog']);
@@ -131,7 +132,9 @@
         if (!formEl) return
         formEl.validate( async (valid) => {
             if (valid) {
-                loginBtnDisabled.value = true;  //禁用登录按钮
+                // loginBtnDisabled.value = true;  
+                //禁用登录按钮
+                disabledBtn(loginBtnDisabled, true);
                 const { data: responseData } = await noteBaseRequest.post(
                     '/user/login/email/password',
                     {
@@ -143,9 +146,10 @@
                         message: '发送登录请求失败',
                         type: 'error',
                     })
-                    setTimeout(() => {
-                        loginBtnDisabled.value = false;  //解除禁用登录按钮
-                    },2000)
+                    // setTimeout(() => {
+                    //     loginBtnDisabled.value = false;  //解除禁用登录按钮
+                    // },2000)
+                    disabledBtn(loginBtnDisabled, false, true, 2);
                     throw '发送登录请求失败'
                 })
                 console.log(responseData)
@@ -166,9 +170,10 @@
                         type: 'error'
                     })
                 }
-                setTimeout(() => {
-                    loginBtnDisabled.value = false;  //解除禁用登录按钮
-                },2000)
+                // setTimeout(() => {
+                //     loginBtnDisabled.value = false;  //解除禁用登录按钮
+                // },2000)
+                disabledBtn(loginBtnDisabled, false, true, 2);
             } else {
                 return false
             }

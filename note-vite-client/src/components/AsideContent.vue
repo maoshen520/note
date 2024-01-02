@@ -1,53 +1,102 @@
 <template>
-    <div style="padding: 30px 16px;">
+    <div style="padding: 30px 0px;">
         <el-space direction="vertical" :size="30">
-            <div>
-                <!-- <el-icon :size="32" color="#22B14C"> -->
-                <el-icon :size="32" color="#F74800">
-                    <CirclePlusFilled/>
-                </el-icon>
-            </div>
-            <div>
+
+            <el-popover
+                placement="left-start"
+                :width="120"
+                trigger="hover"
+                :offset="-5"
+            >
+                <template #reference>
+                    <el-button text >
+                        <!-- <el-icon :size="32" color="#22B14C"> -->
+                        <el-icon :size="32" color="#F74800">
+                            <CirclePlusFilled/>
+                        </el-icon>
+                    </el-button >
+                </template>
+
+                <div>
+                    <div>
+                        <el-button text style="font-size: 16px;padding: 8px 15px;">
+                            <el-icon :size="20" color="#F74800" style="margin-right: 5px;">
+                                <Document/>
+                            </el-icon>
+                            新增笔记
+                        </el-button>
+                    </div>
+                    <div>
+                        <el-button text style="font-size: 16px;padding: 8px 15px;" @click="createMain('thing')">
+                            <el-icon :size="20" color="#197BF5" style="margin-right: 5px;">
+                                <Collection/>
+                            </el-icon>
+                            新增小记
+                        </el-button>
+                    </div>
+                </div>
+            </el-popover>
+
+            <el-tooltip
+                class="box-item"
+                effect="light"
+                :offset="-5"
+                :content="item.label"
+                placement="right"
+                v-for="(item,index) in menuList" 
+                :key="item.label"
+            >   
+                <el-button 
+                    style="border: none;background-color: #fff;--el-button-hover-text-color:#F74800;"
+                    plain
+                    @click="menuClick(item.to)">
+                    <el-icon :size="item.iconSize" :color="routerPath == item.to ? '#F74800' : ''">
+                        <component :is="item.icon" />
+                    </el-icon>
+                </el-button>
+            </el-tooltip>
+
+
+            
+            <!-- <el-button text dark>
                 <el-icon :size="26" >
                     <Search/>
                 </el-icon>
-            </div>
-
-            <!-- <el-divider /> -->
+            </el-button >
             
-            <div>
+            <el-button text>
                 <el-icon :size="26" >
                     <House/>
                 </el-icon>
-            </div>
+            </el-button >
 
-            <div>
+            <el-button text>
                 <el-icon :size="26" >
                     <Document/>
                 </el-icon>
-            </div>
+            </el-button >
 
-            <div>
+            <el-button text>
                 <el-icon :size="26" >
                     <Collection/>
                 </el-icon>
-            </div>
+            </el-button >
 
-            <div>
+            <el-button text>
                 <el-icon :size="26" >
                     <Star/>
                 </el-icon>
-            </div>
-            <div>
+            </el-button >
+            <el-button text>
                 <el-icon :size="26" >
                     <Delete/>
                 </el-icon>
-            </div>
-            <div>
+            </el-button >
+            <el-button text>
                 <el-icon :size="26" >
                     <QuestionFilled/>
                 </el-icon>
-            </div>
+            </el-button > -->
             
             <!-- <el-divider direction="vertical" /> -->
             
@@ -57,7 +106,90 @@
 </template>
 
 <script setup>
-    import {CirclePlusFilled, Search, House, Document, Collection, Star, Delete, QuestionFilled} from '@element-plus/icons-vue';
+    import {watch,ref} from 'vue'
+    import {
+        CirclePlusFilled, 
+        Search, 
+        Clock, 
+        Document, 
+        Collection, 
+        Star, 
+        Delete, 
+        QuestionFilled, 
+        Notebook,
+        Tickets
+    } from '@element-plus/icons-vue';
+    import {useRouter} from 'vue-router';
+    import bus from 'vue3-eventbus';
+    
+    const router = useRouter();
+
+    const routerPath = ref(router.currentRoute.value.path);  //路由地址
+
+    watch(
+        () => router.currentRoute.value,
+        newData => {
+            routerPath.value = newData.path;
+        }
+    )
+
+    const createMain = (type) => {
+        if(type == 'thing'){
+            router.push('/thing').then(() => {
+                bus.emit('newCreateThing');
+            })
+        }
+    }
+
+    let menuList = [
+        {
+            label:'搜索',
+            icon: Search,
+            iconSize: 26,
+            to:''
+        },
+        {
+            label:'最近操作',
+            icon: Clock,
+            iconSize: 26,
+            to:''
+        },
+        {
+            label:'笔记',
+            icon: Document,
+            iconSize: 26,
+            to:''
+        },
+        {
+            label:'小记',
+            icon: Collection,
+            iconSize: 26,
+            to:'/thing'
+        },
+        {
+            label:'收藏',
+            icon: Star,
+            iconSize: 26,
+            to:''
+        },
+        {
+            label:'删除',
+            icon: Delete,
+            iconSize: 26,
+            to:''
+        },
+        {
+            label:'商城',
+            icon: QuestionFilled,
+            iconSize: 26,
+            to:''
+        },
+    ];
+
+    const menuClick = (to) => {
+        router.push('/thing')
+    }
+
 </script>
 
 <style lang="less" scoped>

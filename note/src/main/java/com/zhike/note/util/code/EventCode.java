@@ -82,4 +82,8 @@ public class EventCode {
     public static final String THING_CREATE_FAILED = "T_009";  //新增小记失败
     public static final String THING_UPDATE_SUCCESS = "T_010";  //修改小记成功
 
+    //=========================sql  日志 的状态码  =========================
+    public static final String LOG_CREATE_EXCEPTION = "TOG_001";  //日志新增异常
+    public static final String LOG_CREATE_ERROR = "TOG_002";  //日志新增错误
+
 }

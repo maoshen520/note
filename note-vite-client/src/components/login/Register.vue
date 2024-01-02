@@ -60,12 +60,14 @@
     import {ref} from 'vue';
     import {Message} from '@element-plus/icons-vue';  //图标
     import { noteBaseRequest } from "@/request/note_request";
+    import {disabledBtn} from "@/utils/disabledBtn.js";
 
     // 自定义事件
     const emits = defineEmits(['changeStep']);
 
     const emailVckey = ref('');  //验证码查询的关键词
 
+    // 是否禁用注册按钮
     const registerBtnDisabled = ref(false);
 
     // 邮箱判断
@@ -135,7 +137,9 @@
                     return false;
                 };
 
-                registerBtnDisabled.value = true;  //禁用注册按钮
+                //禁用注册按钮
+                // registerBtnDisabled.value = true;  
+                disabledBtn(registerBtnDisabled, true);
 
                 const { data: responseData } = await noteBaseRequest.post(
                     '/user/register/email',
@@ -149,9 +153,10 @@
                         message: '注册请求失败',
                         type: 'error',
                     })
-                    setTimeout(() => {
-                        registerBtnDisabled.value = false;  //解除禁用注册按钮
-                    },2000)
+                    // setTimeout(() => {
+                    //     registerBtnDisabled.value = false;  //解除禁用注册按钮
+                    // },2000)
+                    disabledBtn(registerBtnDisabled, false, true, 2);
                     throw '注册请求失败';
                 })
 
@@ -166,9 +171,10 @@
                         message: responseData.message,
                         type: 'error'
                     })
-                    setTimeout(() => {
-                        registerBtnDisabled.value = false;  //解除禁用注册按钮
-                    },2000)
+                    disabledBtn(registerBtnDisabled, false, true, 2);
+                    // setTimeout(() => {
+                    //     registerBtnDisabled.value = false;  //解除禁用注册按钮
+                    // },2000)
                 }
             } else {
                 return false
