@@ -253,7 +253,7 @@ public class ThingServiceImpl implements IThingService {
         //将查到小记返回出去
 
         QueryWrapper wrapper = QueryWrapper.create()
-                .select(THING.TITLE, THING.TOP, THING.TAGS, THING.CONTENT)
+                .select(THING.TITLE, THING.TOP, THING.TAGS, THING.CONTENT, THING.USER_ID)
                 .where(THING.ID.eq(thingId))
                 .and(THING.USER_ID.eq(userId))
                 .and(THING.STATUS.eq(1));

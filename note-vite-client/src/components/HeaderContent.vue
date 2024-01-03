@@ -1,3 +1,5 @@
+<!-- 头部组件 -->
+
 <template>
     <div class="clearfix">
         <div class="fl header-title">知科笔记</div>

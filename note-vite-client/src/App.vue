@@ -1,45 +1,65 @@
 
 <template>
 	<div class="common-layout">
-		<el-container>
-			<el-header>
-				<!-- header -->
-				<header_c></header_c>
-			</el-header>
-			<el-container style="height:calc(100% - 64px) ;">
-				<!-- 导航栏 -->
-				<el-aside>
-					<aside_c></aside_c>
-				</el-aside>
-
-				<!-- 主界面 -->
-				<el-main style="background-color: #F2F6F7;">
-					<router-view />
-				</el-main>
-			</el-container>
-		</el-container>
-
-		<LoginModal />
+		<homeView></homeView>
 	</div>
 </template>
 
 <script setup>
-	import { onMounted } from 'vue';
+	import { onMounted, watch, ref, provide } from 'vue';
 	import { noteBaseRequest } from "@/request/note_request";
 	import md5 from 'md5';
-	import header_c from '@/components/HeaderContent.vue';
-	import aside_c from '@/components/AsideContent.vue';
-	import LoginModal from '@/components/login/LoginModal.vue'
+	import homeView from '@/views/HomeView.vue'
+	import { useUserStore } from './stores/userStore';
+	import { storeToRefs } from 'pinia';
+
+	// 用户的共享资源
+	const userStore = useUserStore();
+	// 获取响应的token值
+	const {token} = storeToRefs(userStore);
+
+	// 如果用户的登录状态发生改变 (主要是登录后)，重新加载本页面
+	// watch(
+	// 	() => token.value,
+	// 	newData => {
+	// 		if(newData !== null){
+	// 			location.reload();
+	// 		}
+	// 	}
+	// )
+	
+	// 是否需要重新加载页面
+	const needReload = ref(false);
 
 	onMounted(() => {
-
 		// 监听本地存储是否发生变化
-		// window.addEventListener('storage', event => {
-		// 	// console.log(event)
-		// 	// 如果发生改变，event.key就是改变的
-		// 	// event.newValue就是新值
-		// })
+		window.addEventListener('storage', event => {
+			// console.log(event)
+			// 如果发生改变，event.key就是改变的
+			// event.newValue就是新值
+
+			if(event.key === 'user'){
+				// console.log('用户状态发生改变')
+				// location.reload();  //强制刷新页面--用户状态发生改变
+
+				// 判断token的值是否发生了变化  ---防止改变用户其他信息导致弹出重新加载页面弹框
+				const newToken = JSON.parse(event.newValue).token;
+				const oldToken = JSON.parse(event.oldValue).token;
+
+				if(newToken === oldToken){
+					userStore.$hydrate();
+				}else {
+					needReload.value = true;
+					setTimeout( () => {
+						needReload.value = false;
+					},1000)
+				}
+			}
+		})
 	})
+
+	//为后代组件提供数据
+	provide('needReload', needReload)
 </script>
 
 <style lang="less" scoped>
@@ -47,20 +67,7 @@
 		width: 100%;
 		height: 100%;
 	}
-	.el-container{
-		height: 100%;
-	}
-	.el-header{
-		// background-color: aqua;
-		height: 64px;
-		border-bottom: 1px solid #EAE9EA;
-	}
-	.el-aside{
-		// background-color: aquamarine;
-		width: 64px;
-		border-right: 1px solid #EAE9EA;
-		
-	}
+	
 
 	
 </style>

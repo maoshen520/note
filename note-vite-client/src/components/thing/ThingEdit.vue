@@ -224,14 +224,6 @@
         bus.off('newCreateThing');  //停止监听新建小记事件
     })
 
-    // // 父组件传值
-    // const propsData = defineProps({
-    //     show:{type:Boolean, default:false},  //是否显示提醒框
-    //     describe:{type:String, required:true},  //提醒描述
-    //     delectBtn: {type:Boolean, default:true},  //删除按钮是否显示
-    //     completeDelectBtn: {type:Boolean, default:true},  //彻底删除是否显示
-    // })
-
     //自定义事件
     const emits = defineEmits(['save']) 
     
@@ -240,6 +232,12 @@
     
     //是否加载中---显示骨架屏
     const loading = ref(true);  
+
+    // 该小记的用户的编号
+    const userId = ref(null);  
+
+    //小记编号
+    const thingId = computed(() => formValue.value.id)
 
     // 小记表单值
     const formValue = ref({
@@ -290,7 +288,6 @@
             tagsDisabledBtn.value = true;
         }
     }
-
     // 增加待办事件
     const addTuDoThing = (index) => {
         if(index === 0){
@@ -379,6 +376,7 @@
         //判断用户的登录状态
         const userToken = await getUserToken();
 
+        // 按钮禁用
         disabledBtn(saveBtnDisabled, true);
 
         const thingObj = formValue.value;
@@ -467,12 +465,14 @@
                 message: '获取小记请求失败',
                 type: 'error',
             })
+            dialogVisible.value = false;   //关闭弹窗
             throw '获取小记请求失败'
         })
         console.log(responseData)
         if(responseData.success){
             loading.value = false;
             const editThing = responseData.data;
+            userId.value = editThing.userId;  //当前小记的用户编号
             formValue.value.title = editThing.title;
             formValue.value.top = !!editThing.top;
             formValue.value.tags = editThing.tags.split(',');
@@ -482,6 +482,7 @@
                 message: responseData.message,
                 type: 'error'
             });
+            dialogVisible.value = false;  //关闭弹窗
             // 登录已失效
             if(responseData.code == 'L_008'){
                 loginInvalid(true);
@@ -490,7 +491,7 @@
     }
 
     // 将哪些函数导出
-    defineExpose({showDialogVisible})
+    defineExpose({showDialogVisible, dialogVisible, userId, thingId})
 
 </script>
 

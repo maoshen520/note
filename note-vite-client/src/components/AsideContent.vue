@@ -1,3 +1,5 @@
+<!-- 左侧导航栏组件 -->
+
 <template>
     <div style="padding: 30px 0px;">
         <el-space direction="vertical" :size="30">
@@ -9,7 +11,7 @@
                 :offset="-5"
             >
                 <template #reference>
-                    <el-button text >
+                    <el-button plain style="border: none;">
                         <!-- <el-icon :size="32" color="#22B14C"> -->
                         <el-icon :size="32" color="#F74800">
                             <CirclePlusFilled/>
@@ -94,7 +96,7 @@
             </el-button >
             <el-button text>
                 <el-icon :size="26" >
-                    <QuestionFilled/>
+                    <ShoppingBag/>
                 </el-icon>
             </el-button > -->
             
@@ -115,9 +117,7 @@
         Collection, 
         Star, 
         Delete, 
-        QuestionFilled, 
-        Notebook,
-        Tickets
+        ShoppingBag, 
     } from '@element-plus/icons-vue';
     import {useRouter} from 'vue-router';
     import bus from 'vue3-eventbus';
@@ -158,7 +158,7 @@
             label:'笔记',
             icon: Document,
             iconSize: 26,
-            to:''
+            to:'/note'
         },
         {
             label:'小记',
@@ -173,21 +173,22 @@
             to:''
         },
         {
+            label:'商城',
+            icon: ShoppingBag,
+            iconSize: 26,
+            to:''
+        },
+        {
             label:'删除',
             icon: Delete,
             iconSize: 26,
             to:''
         },
-        {
-            label:'商城',
-            icon: QuestionFilled,
-            iconSize: 26,
-            to:''
-        },
+        
     ];
 
     const menuClick = (to) => {
-        router.push('/thing')
+        router.push(to)
     }
 
 </script>

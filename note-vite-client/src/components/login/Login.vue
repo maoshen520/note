@@ -155,11 +155,18 @@
                 console.log(responseData)
 
                 if(responseData.success){
-                    
-                    localStorage.setItem('userToken',responseData.data.userToken);
+                    // localStorage.setItem('userToken',responseData.data.userToken);
                     emits('childCloseDialog');
                     const user = responseData.data.user;
-                    setUserInfo(user.id,user.email,user.nickname,user.headPic,user.level,user.time);
+                    setUserInfo(
+                        responseData.data.userToken,
+                        user.id,
+                        user.email,
+                        user.nickname,
+                        user.headPic,
+                        user.level,
+                        user.time
+                    );
                     ElMessage({
                         message: responseData.message,
                         type: 'success'

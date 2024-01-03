@@ -1,5 +1,7 @@
+<!-- 小记父组件 -->
+
 <template>
-    <div>
+    <div style="margin: 20px;">
         <!-- 小记列表页的标头 -->
         <el-card class="box-card" shadow="never">
             <div class="card-header">
@@ -131,7 +133,7 @@
 </template>
 
 <script setup>
-    import {ref} from "vue"
+    import {ref,watch} from "vue"
     import { Search} from '@element-plus/icons-vue';  //图标
     import {getUserToken,loginInvalid} from "@/utils/userLoginUtils.js";
     import {noteBaseRequest} from "@/request/note_request.js";
@@ -139,6 +141,29 @@
     import gsap from "gsap";
     import deleteRemindDialog from "@/components/remind/DeleteRemindDialog.vue";
     import ThingEdit from "@/components/thing/ThingEdit.vue";
+    import { useUserStore } from '@/stores/userStore';
+    import { storeToRefs } from 'pinia';
+
+    // 用户的共享资源
+	const userStore = useUserStore();
+	// 获取响应的token值
+	const {token, id:user_id} = storeToRefs(userStore);
+    watch(
+        () => token.value,
+        newData => {
+            // 是否重新进行登录
+            if(newData !== null){
+                // 重新获取用户的小记列表
+                getThingList(true, false);
+
+                // 判断编辑小记的窗口是否需要关闭 ==> 1.是编辑小记  2.当前用户和小记用户一致
+                if(editThingRef.value.thingId != null && editThingRef.value.userId !== user_id.value){
+                    editThingRef.value.dialogVisible = false;
+                }
+
+            }
+        }
+    )
 
     const isLoad = ref(false);  //请求中显示骨架
 
@@ -310,7 +335,7 @@
         }
     }
     
-    // 编辑小记模态框组件的引用
+    // 编辑小记模态框组件的引用---子组件暴露出来的值---用ref绑定
     const editThingRef = ref(null);
 
     const searchInput = ref('');
