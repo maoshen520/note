@@ -20,9 +20,9 @@
                     <el-text class="mx-1" size="small" type="info">{{ propsData.time }}</el-text>
                 </div>
             </div> 
-            <!-- <div class="popoverBox" ref="popoverCard" :style="{top:t,left:l}"></div>   -->
+            
         </el-card>
-        
+        <!-- <div class="popoverBox" ref="popoverCard" :style="{top:t,left:l}"></div>   -->
     </div>
 </template>
 
@@ -63,7 +63,7 @@
 
     const handleContextmenu = (e) => {
         e.preventDefault()
-        console.log(e)
+        // console.log(e)
         // this.$refs.menu.show(e.clientX, e.clientY)
         // t.value = e.clientY + 'px'
         // l.value = e.clientX + 'px'
