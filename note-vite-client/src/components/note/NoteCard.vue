@@ -41,12 +41,12 @@
     
     // 自定义属性
     const propsData = defineProps({
-        id: {type: Number, required:true},
-        title: {type:String, required:true},
-        body: {type:String, required:true},
-        top: {type:Boolean, required:true},
-        time: {type:String, required:true},
-        cardIndex: {type:Number, required:false},
+        id: {type: Number, required:true},   // 编号
+        title: {type:String, required:true},  // 标题
+        body: {type:String, default: () => "暂无内容"},  // 简介
+        top: {type:Boolean, required:true},  //是否置顶
+        time: {type:String, required:true},  //时间
+        cardIndex: {type:Number, required:false},   //点击选择激活的
     })
 
     // const cardIndex = ref(null)

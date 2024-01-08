@@ -15,4 +15,32 @@ public interface INoteService {
      */
     List<Note> getUserNormalNotes(int userId) throws ServiceException;
 
+    /**
+     * 置顶笔记（取消置顶笔记）
+     *
+     * @param isTop  是否置顶笔记
+     * @param noteId  笔记编号
+     * @param userId  用户编号
+     * @throws ServiceException  业务异常
+     */
+    void topNote(boolean isTop, int noteId, int userId) throws ServiceException;
+
+    /**
+     * 删除笔记（删除或彻底删除笔记）
+     *
+     * @param complete  是否彻底删除
+     * @param noteId  笔记编号
+     * @param userId  用户编号
+     * @param isRecycleBin  是否是回收站中的操作
+     * @throws ServiceException  业务异常
+     */
+    void deleteNoteById(boolean complete, int noteId, int userId, boolean isRecycleBin) throws ServiceException;
+
+    /**
+     * 创建笔记（并且初始化）
+     * @param userId
+     * @return
+     * @throws ServiceException
+     */
+    int createNoteInit(int userId) throws ServiceException;
 }

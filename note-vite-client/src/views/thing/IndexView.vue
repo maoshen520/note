@@ -116,7 +116,8 @@
                 <!-- 删除提示框 -->
                 <deleteRemindDialog 
                     :show="delectRemind.show"
-                    :describe="delectRemind.desc"
+                    :title="delectRemind.title"
+                    :size="1"
                     @delect="deleteThing"
                     @cancel="delectRemind.show = false"
                 ></deleteRemindDialog>
@@ -279,13 +280,13 @@
     const delectRemind = ref({
         show:false,  //是否显示
         id:'',  //小记编号
-        desc:'',  //提醒框的提示内容
+        title:'',  //提醒框的提示内容
     })
 
     // 显示删除提醒框
     const showDeleteRemindDialog = ({id, title}) => {
         delectRemind.value.id = id;  //将要删除的小记编号
-        delectRemind.value.desc = '删除《' + title + '》将会在回收站恢复，彻底删除则无法恢复'; //将要删除的描述内容
+        delectRemind.value.title = title;
         delectRemind.value.show = true;  //显示删除提醒框
     }   
 

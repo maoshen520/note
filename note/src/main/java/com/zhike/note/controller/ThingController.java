@@ -103,7 +103,7 @@ public class ThingController {
             if (Validator.isEmpty(isTop)) return new ResponseData(false, "置顶参数有误", EventCode.PARAM_TOP_WRONG);
 
             //验证小记编号参数
-            if (Validator.isEmpty(thingId)) return new ResponseData(false, "置顶参数有误", EventCode.PARAM_THING_ID_WRONG);
+            if (Validator.isEmpty(thingId)) return new ResponseData(false, "小记编号参数有误", EventCode.PARAM_THING_ID_WRONG);
 
             //调用置顶小记业务
             thingService.topThing(isTop, thingId, user.getId());

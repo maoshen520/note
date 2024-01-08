@@ -9,7 +9,14 @@ const routes = [
     },
     {
         path:'/note',
-        component: () => import('@/views/note/IndexView.vue')
+        component: () => import('@/views/note/IndexView.vue'),
+        children: [
+            {
+                path:'edit/:id',
+                props:true,
+                component: () => import('@/views/note/NoteEdit.vue'),
+            }
+        ]
     },
 ]
 

@@ -1,9 +1,11 @@
 <template>
     <el-dropdown
         trigger="click"
-        ref="dropdown1"
+        :hide-on-click="false"
+        ref="dropdown"
         class="dropdownBox"
         :style="{top:clickRightClientY,left:clickRightClientX}"
+        
     >
         <span class="el-dropdown-link">
         <!-- Dropdown List -->
@@ -20,7 +22,7 @@
                 </el-dropdown-item>
 
                 <el-dropdown-item style="padding: 0px;">
-                    <el-button plain class="popoverBox-button"  @click="emits('delete')">
+                    <el-button plain class="popoverBox-button" @click="emits('delete',{id,title})">
                         <el-icon :size="16" style="margin-right: 5px;">
                             <Delete/>
                         </el-icon>
@@ -28,7 +30,7 @@
                     </el-button>
                 </el-dropdown-item>
                 <el-dropdown-item >
-                    <el-button plain class="popoverBox-button">
+                    <el-button plain class="popoverBox-button" :disabled="topBtnDisabled"  @click="topNote(!propsData.top)">
                         <el-icon size="16" style="margin-right: 5px;"><component :is="thingCardTopContext().icon" /></el-icon>
                         {{thingCardTopContext().text}}
                     </el-button>
@@ -49,16 +51,21 @@
         Download,
         Upload
     } from '@element-plus/icons-vue';
+    import {disabledBtn} from "@/utils/disabledBtn.js";  //禁用按钮
+    import {getUserToken,loginInvalid} from "@/utils/userLoginUtils.js";
+    import {noteBaseRequest} from "@/request/note_request.js";
 
     let propsData = defineProps({
         clickRightClientY: {type: String, required:true},
         clickRightClientX: {type: String, required:true},
         top: {type: Boolean, required:true},
+        id: {type: Number, required:true},
+        title: {type:String, required:true},   //标题
         // isShowRight: {type: Boolean, required:true},
     })
 
     //自定义事件
-    const emits = defineEmits(['delete']) 
+    const emits = defineEmits(['delete', 'changeStatus']) 
 
     // 置顶按钮和取消置顶按钮显示对象
     const thingCardTopContext = () => {
@@ -74,9 +81,64 @@
             }
         }
     }
-    const dropdown1 = ref(null)
+
+    // 打开菜单
+    const dropdown = ref(null)
     const dropdownOpen = () => {
-        dropdown1.value.handleOpen()
+        dropdown.value.handleOpen();  //打开菜单
+    }
+
+    //禁用置顶/取消置顶按钮
+    const topBtnDisabled = ref(false);
+
+    // 置顶笔记（取消置顶）
+    const topNote = async (isTop) => {
+        //判断用户的登录状态
+        const userToken =  await getUserToken();
+
+        // 禁用按钮
+        // topBtnDisabled.value = true;  //禁用按钮
+        disabledBtn(topBtnDisabled, true);
+
+        const { data: responseData } = await noteBaseRequest.get(
+            "/note/top",
+            {
+                params:{isTop, noteId: propsData.id},
+                headers: {
+                    userToken:userToken
+                }
+            }
+        ).catch(() => {
+            ElMessage({
+                message:isTop ? '置顶笔记请求失败' : '取消置顶笔记请求失败',
+                type: 'error',
+            })
+            // topBtnDisabled.value = false; //解除禁用按钮
+            disabledBtn(topBtnDisabled, false, true, 1);
+            dropdown.value.handleClose();  //关闭菜单
+            throw isTop ? '置顶笔记请求失败' : '取消置顶笔记请求失败';
+        })
+        if(responseData.success){
+            // things.value = responseData.data;  //小记列表
+            ElMessage({
+                message:responseData.message,
+                type: 'success',
+            });
+            emits('changeStatus');  //调用父组件的请求列表的方法
+            // topBtnDisabled.value= false; //解除禁用按钮
+        }else{
+            ElMessage({
+                message: responseData.message,
+                type: 'error'
+            });
+            // topBtnDisabled.value= false; //解除禁用按钮
+            // 登录已失效
+            if(responseData.code == 'L_008'){
+                loginInvalid(true);
+            }
+        }
+        disabledBtn(topBtnDisabled, false, true, 1);
+        dropdown.value.handleClose();  //关闭菜单
     }
 
     

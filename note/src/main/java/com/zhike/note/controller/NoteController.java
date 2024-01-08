@@ -1,5 +1,6 @@
 package com.zhike.note.controller;
 
+import cn.hutool.core.lang.Validator;
 import com.zhike.note.exception.ServiceException;
 import com.zhike.note.pojo.Note;
 import com.zhike.note.pojo.Thing;
@@ -11,10 +12,7 @@ import com.zhike.note.util.response.ResponseData;
 import com.zhike.note.util.validate.TokenValidateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,7 +37,6 @@ public class NoteController {
      * @param userToken
      * @return
      */
-
     @GetMapping("/list")
     public ResponseData getUserNoteList(@RequestHeader String userToken){
 
@@ -57,6 +54,91 @@ public class NoteController {
     }
 
 
+    /**
+     * 置顶笔记（取消置顶）
+     * 请求地址 url:http://127.0.0.1:18081/zhike-notes/note/top
+     * @param isTop 是否置顶 笔记
+     * @param noteId  笔记编号
+     * @param userToken  redis key 登录用户的信息
+     * @return  响应数据
+     */
+    @GetMapping("/top")
+    public ResponseData topNote(boolean isTop, int noteId, @RequestHeader String userToken) {
 
+        try {
+            // 判断登录参数
+            User user = TokenValidateUtil.validateUserToken(userToken, redisTemplate);
+
+            // 验证置顶参数
+            if (Validator.isEmpty(isTop)) return new ResponseData(false, "置顶参数有误", EventCode.PARAM_NOTE_TOP_WRONG);
+
+            //验证笔记编号参数
+            if (Validator.isEmpty(noteId)) return new ResponseData(false, "笔记编号参数有误", EventCode.PARAM_NOTE_ID_WRONG);
+
+            //调用置顶笔记业务
+            noteService.topNote(isTop, noteId, user.getId());
+            return new ResponseData(true,isTop ? "置顶成功" : "取消置顶成功", EventCode.UPDATE_SUCCESS);
+        } catch (ServiceException e) {  //执行 List<Thing> things = thingService.getUserNormalThing(user.getId()); 业务报错，抛出ServiceException异常
+            e.printStackTrace();
+            return new ResponseData(false,e.getMessage(), e.getCode());
+        }
+    }
+
+
+    /**
+     * 删除笔记（彻底）
+     * 请求地址 url:http://127.0.0.1:18081/zhike-notes/note/delete
+     * @param complete 是否置顶 笔记
+     * @param noteId  笔记编号
+     * @param isRecycleBin  是否为回收站操作
+     * @param userToken  redis key 登录用户的信息
+     * @return  响应数据
+     */
+    @DeleteMapping("/delete")
+    public ResponseData deleteNote(boolean complete, int noteId, boolean isRecycleBin ,@RequestHeader String userToken) {
+
+        try {
+            // 判断登录参数
+            User user = TokenValidateUtil.validateUserToken(userToken, redisTemplate);
+
+            // 验证彻底参数
+            if (Validator.isEmpty(complete)) return new ResponseData(false, "删除参数有误", EventCode.PARAM_NOTE_COMPLETE_WRONG);
+
+            // 验回收站参数
+            if (Validator.isEmpty(isRecycleBin)) return new ResponseData(false, "删除参数有误", EventCode.PARAM_NOTE_RECYCLE_BIN_WRONG);
+
+            //验证小记编号参数
+            if (Validator.isEmpty(noteId)) return new ResponseData(false, "笔记编号参数有误", EventCode.PARAM_NOTE_ID_WRONG);
+
+            //调用删除笔记业务
+            noteService.deleteNoteById(complete, noteId, user.getId(),isRecycleBin);
+            return new ResponseData(true,complete ? "彻底删除成功" : "删除成功", EventCode.UPDATE_SUCCESS);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return new ResponseData(false,e.getMessage(), e.getCode());
+        }
+    }
+
+    /**
+     * 新增笔记
+     * 请求地址 url:http://127.0.0.1:18081/zhike-notes/note/create
+     * @param userToken  redis key 登录用户的信息
+     * @return  响应数据
+     */
+    @PutMapping("/create")
+    public ResponseData createNote(@RequestHeader String userToken) {
+
+        try {
+            // 判断登录参数
+            User user = TokenValidateUtil.validateUserToken(userToken, redisTemplate);
+
+            //调用新增笔记业务
+            int noteId = noteService.createNoteInit(user.getId());
+            return new ResponseData(true,"创建成功", EventCode.NOTE_CREATE_SUCCESS, noteId);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return new ResponseData(false,e.getMessage(), e.getCode());
+        }
+    }
 
 }

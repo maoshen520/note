@@ -122,11 +122,11 @@ public class ThingServiceImpl implements IThingService {
             count = thingDao.updateByQuery(thing, wrapper);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ServiceException(desc + "小记服务异常", EventCode.UPDATE_EXCEPTION);
+            throw new ServiceException(desc + "服务异常", EventCode.UPDATE_EXCEPTION);
         }
 
         if (count != 1){
-            throw new ServiceRollbackException(desc + "小记服务异常", eventFailed);
+            throw new ServiceRollbackException(desc + "服务异常", eventFailed);
         }
 
         Date localTime = new Date();  //时间

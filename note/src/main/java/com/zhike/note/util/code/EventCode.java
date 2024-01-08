@@ -64,13 +64,19 @@ public class EventCode {
     public static final String PARAM_THING_CONTENT_WRONG = "P_013";  //小记待办事项参数有误
     public static final String PARAM_THING_FINISHED_WRONG = "P_014";  //小记完成参数有误
 
+    //  笔记
+    public static final String PARAM_NOTE_TOP_WRONG = "P_015";  //笔记置顶参数有误
+    public static final String PARAM_NOTE_ID_WRONG = "P_016";  //笔记编号参数有误
+    public static final String PARAM_NOTE_COMPLETE_WRONG = "P_017";  //删除参数有误（是否为彻底删除的参数）
+    public static final String PARAM_NOTE_RECYCLE_BIN_WRONG = "P_018";  //删除参数有误（是否为回收站操作的参数）
+
 
     //=========================sql  redis 的状态码  =========================
     public static final String REDIS_SERVE_ERROR = "R_001";  //redis服务
 
 
 
-    //=========================sql  小记 的状态码  =========================
+    //=========================sql  小记  的状态码  =========================
     public static final String THING_tOP_SUCCESS = "T_001";  //置顶小记成功
     public static final String THING_tOP_FAILED = "T_002";  //置顶小记失败
     public static final String THING_CANCET_tOP_SUCCESS = "T_003";  //取消置顶小记成功
@@ -86,4 +92,15 @@ public class EventCode {
     public static final String LOG_CREATE_EXCEPTION = "TOG_001";  //日志新增异常
     public static final String LOG_CREATE_ERROR = "TOG_002";  //日志新增错误
 
+    //=========================sql  笔记 的状态码  =========================
+    public static final String NOTE_tOP_SUCCESS = "N_001";  //置顶笔记成功
+    public static final String NOTE_tOP_FAILED = "N_002";  //置顶笔记失败
+    public static final String NOTE_CANCET_tOP_SUCCESS = "N_003";  //取消置顶笔记成功
+    public static final String NOTE_CANCET_tOP_FAILED = "N_004";  //取消置顶笔记失败
+    public static final String NOTE_DELETE_SUCCESS = "N_005";  //删除笔记成功
+    public static final String NOTE_COMPLETE_DELETE_SUCCESS = "N_006";  //彻底删除笔记成功
+    public static final String NOTE_CREATE_SUCCESS = "N_007";  //新增小记成功
+    public static final String NOTE_CREATE_EXCEPTION = "N_008";  //新增小记异常
+    public static final String NOTE_CREATE_FAILED = "N_009";  //新增小记失败
+    public static final String NOTE_UPDATE_SUCCESS = "N_010";  //修改小记成
 }

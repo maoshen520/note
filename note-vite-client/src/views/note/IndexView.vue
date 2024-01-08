@@ -2,10 +2,10 @@
 <!-- 笔记父组件 -->
 
 <template>
-    <div style="height: 100%;">
+    <div class="clearfix" style="height: 100%;">
 
-        <!-- 笔记列表 -->
-        <div class="note-list-box">
+        <!-- 笔记列表容器 -->
+        <div class="note-list-box fl">
             <!-- 笔记列表页的标头 -->
             <el-card class="box-card" shadow="never">
                 <div class="card-header">
@@ -19,7 +19,7 @@
                             content="新增笔记"
                             placement="top"
                         >  
-                            <el-button style="border: none;" plain >
+                            <el-button style="border: none;" plain @click="createNote">
                                 <el-icon :size="40" color="#F74800">
                                     <CirclePlusFilled/>
                                 </el-icon>
@@ -71,12 +71,11 @@
                             :key="item.id"
                             @click="cardClick(item.id)"
                             :data-index="index"
-                            @click.right="clickRight($event,item.id,item.top)"
-                            
+                            @click.right="clickRight($event,item.id,item.top,item.title)"
                         >
                             <noteCard 
                                 :id="item.id"
-                                :title="item.title"
+                                :title="item.title ? item.title : createTitle"
                                 :body="item.body"
                                 :top="!!item.top"
                                 :time="item.updateTime"
@@ -93,21 +92,36 @@
 
             <!-- 右键显示菜单栏 -->
             <clickRightMenu
-                ref="clickRightVueRef"
+                ref="clickRightMenuRef"
                 :clickRightClientY="clickRightClientY"
                 :clickRightClientX="clickRightClientX"
                 :top="isTop"
-                @delete="deleteNote"
+                :id="noteId"
+                :title="noteTitle"
+                @changeStatus="getNoteList(false,false)"
+                @delete="showDeleteRemindDialog"
             ></clickRightMenu>
-         
-            
-            
+
+            <!-- 删除提示框 -->
+            <deleteRemindDialog 
+                :show="delectRemind.show"
+                :title="delectRemind.title"
+                :size="1"
+                @delect="deleteThing"
+                @cancel="delectRemind.show = false"
+            ></deleteRemindDialog>  
+        </div>
+
+        <!-- 笔记编辑容器 -->
+        <div class="fl"  style="width: calc(100% - 361px);height: 100%;">
+            <router-view />
         </div>
     </div>
 </template>
 
 <script setup>
     import {ref} from 'vue';
+    import { useRouter } from 'vue-router';
     import {getUserToken,loginInvalid} from "@/utils/userLoginUtils.js";
     import {noteBaseRequest} from "@/request/note_request.js";
     import {
@@ -116,8 +130,11 @@
     import noteCard from '@/components/note/NoteCard.vue';
     import clickRightMenu from '@/components/note/ClickRightMenu.vue';
     import gsap from "gsap";
+    import deleteRemindDialog from "@/components/remind/DeleteRemindDialog.vue";
 
     const isLoad = ref(false);
+
+    const router = useRouter();
 
     // 获取笔记列表数据
     const notes = ref([]);   //小记列表
@@ -126,6 +143,7 @@
     const cardIndex = ref(null)
     const cardClick = (id) => {
         cardIndex.value = id;
+        goEditNoteView(id);  //跳转至编辑路由
     }
 
     //显示小记卡片是否需要延迟动画
@@ -196,6 +214,7 @@
         }   
     }
 
+    // 获取笔记列表
     const getNoteList = async (ed, ha) => {
         
         enterDelay = ed;  //显示是否需要动画
@@ -246,22 +265,130 @@
     const clickRightClientY = ref('');
     const clickRightClientX = ref('');
     const isTop = ref(false);
-    const clickRightVueRef = ref(null);
-    const clickRight = (e,id,top) => {
+    const noteId = ref(0);
+    const noteTitle = ref('');
+    const clickRightMenuRef = ref(null);
+    const clickRight = (e,id,top,title) => {
         e.preventDefault()
         cardIndex.value = id;
         isTop.value = !!top;
+        noteId.value = id;
+        noteTitle.value = title ? title : createTitle;
         clickRightClientY.value = (e.clientY - 15) + 'px'
         clickRightClientX.value = (e.clientX + 50) + 'px'
-        clickRightVueRef.value.dropdownOpen();
+        clickRightMenuRef.value.dropdownOpen();
         
     }
 
+    // 删除提示框的对象
+    const delectRemind = ref({
+        show:false,  //是否显示
+        id:'',  //小记编号
+        title:'',  //删除单个文件名称
+    })
+    // 显示删除提醒框
+    const showDeleteRemindDialog = ({id, title}) => {
+        delectRemind.value.id = id;  //将要删除的笔记编号
+        delectRemind.value.title = title;
+        delectRemind.value.show = true;  //显示删除提醒框
+    }   
+    // 删除笔记   --complete 是否彻底删除
+    const deleteThing =async (complete) => {
 
-    const deleteNote = () => {
-        console.log('点击删除')
+        delectRemind.value.show = false;  //关闭删除提醒框
+
+        //判断用户的登录状态
+        const userToken =  await getUserToken();
+
+        const { data: responseData } = await noteBaseRequest.delete(
+            "/note/delete",
+            {
+                params:{
+                    complete,
+                    isRecycleBin:false,  //
+                    noteId:delectRemind.value.id
+                },
+                headers: {
+                    userToken:userToken
+                }
+            }
+        ).catch(() => {
+            ElMessage({
+                message: complete ? '彻底删除笔记请求失败' : '删除笔记请求失败',
+                type: 'error',
+            })
+            throw complete ? '彻底删除笔记请求失败' : '删除笔记请求失败';
+        })
+        if(responseData.success){
+            ElMessage({
+                message:responseData.message,
+                type: 'success',
+            });
+            getNoteList(false, true); 
+        }else{
+            ElMessage({
+                message: responseData.message,
+                type: 'error'
+            });
+            // 登录已失效
+            if(responseData.code == 'L_008'){
+                loginInvalid(true);
+            }
+        }
     }
-   
+
+    let createTitle = "暂未设置标题";
+    // 新增笔记
+    const createNote = async () => {
+        //判断用户的登录状态
+        const userToken =  await getUserToken();
+
+        const { data: responseData } = await noteBaseRequest.put(
+            "/note/create",
+            {},
+            {
+                headers: {
+                    userToken:userToken
+                }
+            }
+        ).catch(() => {
+            ElMessage({
+                message: '新增笔记请求失败',
+                type: 'error',
+            })
+            throw '新增笔记请求失败';
+        })
+        if(responseData.success){
+            ElMessage({
+                message:responseData.message,
+                type: 'success',
+            });
+            goEditNoteView(responseData.data);  //跳转至编辑路由
+            cardIndex.value = responseData.data;
+            getNoteList(false, false); //获取笔记列表（新增笔记不需要有显示的延迟效果）
+        }else{
+            ElMessage({
+                message: responseData.message,
+                type: 'error'
+            });
+            // 登录已失效
+            if(responseData.code == 'L_008'){
+                loginInvalid(true);
+            }
+        }
+    }
+
+    const goEditNoteView = (id) => {
+        if(id){
+            router.push('/note/edit/' + id);  //跳转至编辑路由
+        }else {
+            ElMessage({
+                message: '编辑笔记编号不能为空',
+                type: 'error',
+            });
+        }
+    }
+
 
 </script>
 

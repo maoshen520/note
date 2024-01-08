@@ -29,6 +29,7 @@ public class Note {
     private Date updateTime; // 最后修改时间
     @Column("u_id")
     private Integer userId;  //小记所属用户编号
+    @Column(onInsertValue = "0")
     private Integer top;  //是否置顶【0：不置顶  1：置顶】
     @Column(onInsertValue = "1")
     private Integer status; //状态【0：删除， -1彻底删除， 1：正常 】
