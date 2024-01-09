@@ -52,7 +52,7 @@
                     style="border: none;background-color: #fff;--el-button-hover-text-color:#F74800;"
                     plain
                     @click="menuClick(item.to)">
-                    <el-icon :size="item.iconSize" :color="routerPath == item.to ? '#F74800' : ''">
+                    <el-icon :size="item.iconSize" :color="isHightMenu(item.to) ? '#F74800' : ''">
                         <component :is="item.icon" />
                     </el-icon>
                 </el-button>
@@ -129,9 +129,16 @@
     watch(
         () => router.currentRoute.value,
         newData => {
+            // routerPath.value ='/' + newData.path.split('/')[1];
             routerPath.value = newData.path;
         }
     )
+    
+    // 是否高亮显示
+    const isHightMenu = (toRouterPath) => {
+        if(!toRouterPath) return false;
+        return routerPath.value.startsWith(toRouterPath);  //判断是否已父级路由开头
+    }
 
     const createMain = (type) => {
         if(type == 'thing'){

@@ -229,4 +229,35 @@ public class NoteServiceImpl implements INoteService {
         //返回新增笔记的编号
         return note.getId();
     }
+
+    /**
+     * 获取笔记信息
+     *
+     * @param noteId 笔记编号
+     * @param userId 用户编号
+     * @throws ServiceException 业务异常
+     */
+    @Override
+    public Note getEditNote(int noteId, int userId) throws ServiceException {
+
+        QueryWrapper wrapper = QueryWrapper.create()
+                .select(NOTE.UPDATE_TIME, NOTE.TITLE, NOTE.CONTENT)
+                .where(NOTE.STATUS.eq(1))
+                .and(NOTE.ID.eq(noteId))
+                .and(NOTE.USER_ID.eq(userId));
+
+        Note note = null;
+        try {
+            note = noteDao.selectOneByQuery(wrapper);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServiceException("笔记获取失败，请稍后再试", EventCode.SELECT_EXCEPTION);
+        }
+
+        if(note == null){
+            throw new ServiceException("笔记不存在，请稍后再试！", EventCode.SELECT_NONE);
+        }
+
+        return note;
+    }
 }

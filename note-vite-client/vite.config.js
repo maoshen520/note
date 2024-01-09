@@ -8,7 +8,12 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 
 import { resolve } from "path";
+import { fileURLToPath, URL } from 'node:url'
 
+
+import { createRequire } from 'node:module'
+const require = createRequire( import.meta.url )
+import ckeditor5 from '@ckeditor/vite-plugin-ckeditor5' // 引入 ckeditor5 vite 插件
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -16,6 +21,7 @@ export default defineConfig({
 	resolve: {
 		alias: {
 		  "@": resolve(__dirname, "src"), // 设置@指向src
+		// '@': fileURLToPath( new URL( './src', import.meta.url ) )
 		},
 	},
 	
@@ -23,6 +29,7 @@ export default defineConfig({
 	plugins: [
 		vue(),
 
+		ckeditor5({ theme: require.resolve('@ckeditor/ckeditor5-theme-lark') }), // ckeditor5 插件
 
 		AutoImport({
 			resolvers: [ElementPlusResolver()],

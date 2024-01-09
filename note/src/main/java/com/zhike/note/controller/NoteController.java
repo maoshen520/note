@@ -141,4 +141,30 @@ public class NoteController {
         }
     }
 
+    /**
+     * 获取编辑笔记信息
+     * 请求地址 url:http://127.0.0.1:18081/zhike-notes/note/edit
+     * @param noteId  小记编号
+     * @param userToken  redis key 登录用户的信息
+     * @return  响应数据
+     */
+    @GetMapping("/edit")
+    public ResponseData getUserEditThing(int noteId, @RequestHeader String userToken) {
+
+        try {
+            // 判断登录参数
+            User user = TokenValidateUtil.validateUserToken(userToken, redisTemplate);
+
+            //验证编辑编号参数
+            if (Validator.isEmpty(noteId)) return new ResponseData(false, "编号参数有误", EventCode.PARAM_THING_ID_WRONG);
+
+            //调用置顶小记业务
+            Note editNote = noteService.getEditNote(noteId, user.getId());
+            return new ResponseData(true,"获取成功", EventCode.SELECT_SUCCESS, editNote);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return new ResponseData(false,e.getMessage(), e.getCode());
+        }
+    }
+
 }

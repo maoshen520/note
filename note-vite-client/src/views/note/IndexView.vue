@@ -136,11 +136,24 @@
 
     const router = useRouter();
 
+    //激活笔记标志
+    const cardIndex = ref(null);  
+
+    // 获取已经激活的笔记  ---防止刷新没激活
+    const getRouterPath = () => {
+        //路由地址
+        const routerPath = ref(router.currentRoute.value.path);  
+        const arrPath = routerPath.value.split('/');
+        if(arrPath.length > 2){
+            cardIndex.value = Number(arrPath[arrPath.length -1])
+        }
+    }
+    getRouterPath();
+
     // 获取笔记列表数据
     const notes = ref([]);   //小记列表
 
     // 卡片点击事件--激活
-    const cardIndex = ref(null)
     const cardClick = (id) => {
         cardIndex.value = id;
         goEditNoteView(id);  //跳转至编辑路由
@@ -378,14 +391,16 @@
         }
     }
 
+    //跳转至编辑路由
     const goEditNoteView = (id) => {
         if(id){
-            router.push('/note/edit/' + id);  //跳转至编辑路由
+            router.push('/note/edit/' + id);  
         }else {
             ElMessage({
                 message: '编辑笔记编号不能为空',
                 type: 'error',
             });
+            return false;
         }
     }
 

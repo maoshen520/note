@@ -43,4 +43,14 @@ public interface INoteService {
      * @throws ServiceException
      */
     int createNoteInit(int userId) throws ServiceException;
+
+    /**
+     * 获取笔记信息
+     *
+     * @param noteId  笔记编号
+     * @param userId  用户编号
+     * @throws ServiceException  业务异常
+     */
+    Note getEditNote(int noteId, int userId) throws ServiceException;
+
 }

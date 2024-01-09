@@ -4,6 +4,14 @@ package com.zhike.note.util.code;
 //事件状态码
 public class EventCode {
 
+
+    /**
+     * public static final String   ---常量池
+     * 用final修饰的成员变量表示常量，值一旦给定就无法改变！
+     *  java中基本类型的包装类的大部分都实现了常量池技术：即Byte,Short,Integer,Long,Character,Boolean；这5种包装类默认创建了数值[-128，127]的相应类型的缓存数据
+     *
+     */
+
     //=========================sql  登录状态码  =========================
     public static final String LOGIN_EMAIL_PASSWORD_SUCCESS = "L_001";  //登录成功(邮箱和密码)
     public static final String LOGIN_FAIL = "L_002";  //登录失败
