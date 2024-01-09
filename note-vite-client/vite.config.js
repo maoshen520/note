@@ -8,7 +8,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 
 import { resolve } from "path";
-import { fileURLToPath, URL } from 'node:url'
+// import { fileURLToPath, URL } from 'node:url'
 
 
 import { createRequire } from 'node:module'
@@ -29,14 +29,14 @@ export default defineConfig({
 	plugins: [
 		vue(),
 
-		ckeditor5({ theme: require.resolve('@ckeditor/ckeditor5-theme-lark') }), // ckeditor5 插件
-
 		AutoImport({
 			resolvers: [ElementPlusResolver()],
 		}),
 		Components({
 			resolvers: [ElementPlusResolver()],
 		}),
+
+		ckeditor5({ theme: require.resolve('@ckeditor/ckeditor5-theme-lark') }) // ckeditor5 插件
 	],
 	
 	server:{

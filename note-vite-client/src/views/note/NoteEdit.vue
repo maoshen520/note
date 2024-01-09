@@ -59,13 +59,18 @@
         </el-card>
         
         <div style="background-color: #fff;height: 500px;">
-            <!-- <ckeditor5 :editor="DecoupledEditor" @ready="readyEditor" v-model="note.content"></ckeditor5> -->
             <ckeditor5 
                 :editor="editorType" 
                 @ready="readyEditor"
                 v-model="note.content"
                 :config="getEditorConfigs()"
             />
+            <!-- <ckeditor5 
+                :editor="editorType" 
+                @ready="readyEditor"
+                v-model="note.content"
+                :config="getEditorConfigs()"
+            /> -->
         </div>
 
 
@@ -82,9 +87,8 @@
     } from '@element-plus/icons-vue';
 
     // 文本编辑器
-    import CKEditor from "@ckeditor/ckeditor5-vue"
-
-    import {editorType, getEditorConfigs} from '@/editor/index.js'
+    import CKEditor from '@ckeditor/ckeditor5-vue';
+    import {editorType, getEditorConfigs} from '@/editor'
 
     const ckeditor5 = CKEditor.component;  //注册ckeditor5组件
     
