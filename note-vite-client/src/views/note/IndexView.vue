@@ -19,7 +19,12 @@
                             content="新增笔记"
                             placement="top"
                         >  
-                            <el-button style="border: none;" plain @click="createNote">
+                            <el-button 
+                                style="border: none;" 
+                                plain 
+                                @click="createNote"
+                                :disabled="createNoteBtn"
+                            >
                                 <el-icon :size="40" color="#F74800">
                                     <CirclePlusFilled/>
                                 </el-icon>
@@ -355,9 +360,11 @@
         }
     }
 
+    const createNoteBtn = ref(false);
     let createTitle = "暂未设置标题";
     // 新增笔记
     const createNote = async () => {
+        createNoteBtn.value = true;
         //判断用户的登录状态
         const userToken =  await getUserToken();
 
@@ -370,6 +377,7 @@
                 }
             }
         ).catch(() => {
+            createNoteBtn.value = false;
             ElMessage({
                 message: '新增笔记请求失败',
                 type: 'error',
@@ -394,6 +402,7 @@
                 loginInvalid(true);
             }
         }
+        createNoteBtn.value = false;
     }
 
     //跳转至编辑路由

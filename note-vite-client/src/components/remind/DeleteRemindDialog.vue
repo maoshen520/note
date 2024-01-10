@@ -5,6 +5,7 @@
             :close-on-click-modal="false"
             :close-on-press-escape="false"
             :show-close="false"
+            style="max-width:700px"
         >
             <template #header>
                 <div class="card-header">
@@ -94,5 +95,6 @@
     .card-header {
         display: flex;
         align-items: start;
+        justify-content:left;
     }
 </style>

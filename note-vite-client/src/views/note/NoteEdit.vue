@@ -87,7 +87,7 @@
             </div>
         </el-card>
         
-        <div style="background-color: #fff;height: 500px;margin-top: 20px;">
+        <div style="background-color: #fff;height: calc(100% - 72px - 20px);margin-top: 20px;">
             <ckeditor5 
                 :editor="editorType" 
                 @ready="readyEditor"
@@ -271,6 +271,7 @@
         box-shadow: none;
     }
     .ck-content{
+        height: calc(100% - 41px);
         overflow-y: scroll;
     }
 </style>
