@@ -143,7 +143,7 @@
 
     
 
-    defineExpose({dropdownOpen});
+    defineExpose({dropdownOpen,dropdown});
 </script>
 
 <style lang="less" scoped>

@@ -260,4 +260,58 @@ public class NoteServiceImpl implements INoteService {
 
         return note;
     }
+
+    /**
+     * 保存正在编辑的笔记
+     *
+     * @param noteId  笔记编号
+     * @param userId  用户编号
+     * @param title   笔记标题
+     * @param body    笔记内容
+     * @param content 笔记内容（完整的）
+     * @throws ServiceException 业务异常
+     */
+    @Override
+    public Date saveEditingNote(int noteId, int userId, String title, String body, String content) throws ServiceException {
+        //修改记录的条件
+        QueryWrapper wrapper = QueryWrapper.create()
+                .where(NOTE.ID.eq(noteId))
+                .and(NOTE.USER_ID.eq(userId))
+                .and(NOTE.STATUS.eq(1));
+
+        Date localTime = new Date();  //时间
+
+        //修改的字段
+        Note note = Note.builder()
+                .title(title)
+                .body(body)
+                .content(content)
+                .updateTime(localTime)
+                .build();
+
+        int count = 0;
+        try {
+            count = noteDao.updateByQuery(note, wrapper);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServiceException("保存失败", EventCode.UPDATE_EXCEPTION);
+        }
+
+        if(count != 1){
+            throw new ServiceRollbackException("保存失败", EventCode.UPDATE_ERROR);
+        }
+
+        //添加保存笔记的日志
+        NoteThingLog log = NoteThingLog.builder()
+                .userId(userId)
+                .desc("保存笔记")
+                .event(EventCode.NOTE_UPDATE_SUCCESS)
+                .time(localTime)
+                .noteId(noteId)
+                .build();
+
+        noteThingLogService.addOneLog(log, true);
+
+        return localTime;
+    }
 }

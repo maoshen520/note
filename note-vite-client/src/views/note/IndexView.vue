@@ -31,63 +31,65 @@
 
 
             <!-- <div style="position: relative;"> -->
-            <div style="height: calc(100% - 63px);overflow: hidden;overflow-y: auto;">
-                <!--笔记列表-- 骨架 :throttle="200"-->
-                <el-skeleton v-if="!isLoad" animated>
-                    <template #template>
-                        <el-card class="card-list" v-for="(item,index) in 3" :key="index">
-                            <template #header>
-                                <div class="card-header">
-                                    <el-skeleton-item style="width: 100%;height: 20px;"/>
-                                </div>
-                            </template>
-                            <div>
+            <div style="height: calc(100% - 63px);" class="scrollbar_div">
+                <el-scrollbar @scroll="clickRightMenuRef.dropdown.handleClose();">
+
+                    <!--笔记列表-- 骨架 :throttle="200"-->
+                    <el-skeleton v-if="!isLoad" animated>
+                        <template #template>
+                            <el-card class="card-list" v-for="(item,index) in 3" :key="index">
+                                <template #header>
+                                    <div class="card-header">
+                                        <el-skeleton-item style="width: 100%;height: 20px;"/>
+                                    </div>
+                                </template>
                                 <div>
-                                    <el-skeleton-item style="width: 100%;height: 40px;"/>
-                                </div>
-                                <div style="margin-top: 8px;">
-                                    <el-space wrap>
-                                        <el-skeleton-item style="width: 50px;height: 22px;margin-right: 5px;"/>
-                                        <el-skeleton-item style="width: 150px;height: 22px;margin-right: 5px;"/>
-                                    </el-space>
-                                </div>
-                            </div>   
-                        </el-card>
-                    </template>
-                </el-skeleton>
+                                    <div>
+                                        <el-skeleton-item style="width: 100%;height: 40px;"/>
+                                    </div>
+                                    <div style="margin-top: 8px;">
+                                        <el-space wrap>
+                                            <el-skeleton-item style="width: 50px;height: 22px;margin-right: 5px;"/>
+                                            <el-skeleton-item style="width: 150px;height: 22px;margin-right: 5px;"/>
+                                        </el-space>
+                                    </div>
+                                </div>   
+                            </el-card>
+                        </template>
+                    </el-skeleton>
 
-                <!-- 笔记列表 -->
-                <TransitionGroup 
-                    @before-enter="beforeEnter" 
-                    @enter="enterEvent"
-                    @before-leave="beforeLeave" 
-                    @leave="leaveEvent"
-                    move-class="move-transtion"
-                >
-                    <!-- 笔记 -->
-                    <template v-if="isLoad && notes.length > 0">
-                        <div 
-                            v-for="(item,index) in notes" 
-                            :key="item.id"
-                            @click="cardClick(item.id)"
-                            :data-index="index"
-                            @click.right="clickRight($event,item.id,item.top,item.title)"
-                        >
-                            <noteCard 
-                                :id="item.id"
-                                :title="item.title ? item.title : createTitle"
-                                :body="item.body"
-                                :top="!!item.top"
-                                :time="item.updateTime"
-                                :cardIndex="cardIndex"
-                            ></noteCard>
-                        </div>
-                    </template>
-                </TransitionGroup>
-                
-
-                <!-- 暂无笔记数据 -->
-                <el-empty v-if="isLoad && notes.length == 0" description="暂无笔记数据" />
+                    <!-- 笔记列表 -->
+                    <TransitionGroup 
+                        @before-enter="beforeEnter" 
+                        @enter="enterEvent"
+                        @before-leave="beforeLeave" 
+                        @leave="leaveEvent"
+                        move-class="move-transtion"
+                    >
+                        <!-- 笔记 -->
+                        <template v-if="isLoad && notes.length > 0">
+                            <div 
+                                v-for="(item,index) in notes" 
+                                :key="item.id"
+                                @click="cardClick(item.id)"
+                                :data-index="index"
+                                @click.right="clickRight($event,item.id,item.top,item.title)"
+                            >
+                                <noteCard 
+                                    :id="item.id"
+                                    :title="item.title ? item.title : createTitle"
+                                    :body="item.body"
+                                    :top="!!item.top"
+                                    :time="item.updateTime"
+                                    :cardIndex="cardIndex"
+                                ></noteCard>
+                            </div>
+                        </template>
+                    </TransitionGroup>
+                    
+                    <!-- 暂无笔记数据 -->
+                    <el-empty v-if="isLoad && notes.length == 0" description="暂无笔记数据" />
+                </el-scrollbar>
             </div>
 
             <!-- 右键显示菜单栏 -->
@@ -143,10 +145,13 @@
     const getRouterPath = () => {
         //路由地址
         const routerPath = ref(router.currentRoute.value.path);  
-        const arrPath = routerPath.value.split('/');
-        if(arrPath.length > 2){
-            cardIndex.value = Number(arrPath[arrPath.length -1])
-        }
+        // const arrPath = routerPath.value.split('/');
+        // if(arrPath.length > 2){
+        //     cardIndex.value = Number(arrPath[arrPath.length -1])
+        // }
+        const index = routerPath.value.indexOf('/note/edit/');
+        if(index === -1) return false;
+        cardIndex.value = parseInt(routerPath.value.substring('/note/edit/'.length));
     }
     getRouterPath();
 
@@ -289,7 +294,7 @@
         noteTitle.value = title ? title : createTitle;
         clickRightClientY.value = (e.clientY - 15) + 'px'
         clickRightClientX.value = (e.clientX + 50) + 'px'
-        clickRightMenuRef.value.dropdownOpen();
+        clickRightMenuRef.value.dropdownOpen();  //调用右键组件打开菜单
         
     }
 
@@ -442,5 +447,10 @@
     .dropdownBox{
         position:fixed;
     }
+ 
+    // /deep/.el-scrollbar__wrap {
+    //     overflow-x: hidden !important;
+    // }
+
        
 </style>

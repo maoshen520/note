@@ -12,6 +12,7 @@
 	import homeView from '@/views/HomeView.vue'
 	import { useUserStore } from './stores/userStore';
 	import { storeToRefs } from 'pinia';
+	import {useRouter} from 'vue-router';
 
 	// 用户的共享资源
 	const userStore = useUserStore();
@@ -57,9 +58,20 @@
 			}
 		})
 	})
-
+	
 	//为后代组件提供数据
-	provide('needReload', needReload)
+	provide('needReload', needReload);
+
+	// 可以再左边导航栏中使用inject接收
+	// const router = useRouter();
+    // const routerPath = ref(router.currentRoute.value.path);  //路由地址
+    // watch(
+    //     () => router.currentRoute.value,
+    //     newData => {
+    //         routerPath.value = newData.path;
+    //     }
+    // )
+	// provide('routerPath', routerPath)
 </script>
 
 <style lang="less" scoped>

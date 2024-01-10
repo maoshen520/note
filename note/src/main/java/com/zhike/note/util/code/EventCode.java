@@ -107,8 +107,8 @@ public class EventCode {
     public static final String NOTE_CANCET_tOP_FAILED = "N_004";  //取消置顶笔记失败
     public static final String NOTE_DELETE_SUCCESS = "N_005";  //删除笔记成功
     public static final String NOTE_COMPLETE_DELETE_SUCCESS = "N_006";  //彻底删除笔记成功
-    public static final String NOTE_CREATE_SUCCESS = "N_007";  //新增小记成功
-    public static final String NOTE_CREATE_EXCEPTION = "N_008";  //新增小记异常
-    public static final String NOTE_CREATE_FAILED = "N_009";  //新增小记失败
-    public static final String NOTE_UPDATE_SUCCESS = "N_010";  //修改小记成
+    public static final String NOTE_CREATE_SUCCESS = "N_007";  //新增笔记成功
+    public static final String NOTE_CREATE_EXCEPTION = "N_008";  //新增笔记异常
+    public static final String NOTE_CREATE_FAILED = "N_009";  //新增笔记失败
+    public static final String NOTE_UPDATE_SUCCESS = "N_010";  //修改笔记成功
 }

@@ -3,6 +3,7 @@ package com.zhike.note.service;
 import com.zhike.note.exception.ServiceException;
 import com.zhike.note.pojo.Note;
 
+import java.util.Date;
 import java.util.List;
 
 public interface INoteService {
@@ -52,5 +53,17 @@ public interface INoteService {
      * @throws ServiceException  业务异常
      */
     Note getEditNote(int noteId, int userId) throws ServiceException;
+
+    /**
+     * 保存正在编辑的笔记
+     *
+     * @param noteId  笔记编号
+     * @param userId  用户编号
+     * @param title  笔记标题
+     * @param body  笔记内容
+     * @param content  笔记内容（完整的）
+     * @throws ServiceException  业务异常
+     */
+    Date saveEditingNote(int noteId, int userId, String title, String body, String content) throws ServiceException;
 
 }

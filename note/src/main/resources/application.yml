@@ -21,7 +21,7 @@ spring:
     time-zone: GMT+8
   web:
     resources:
-      static-locations: file:E:\\ck-file
+      static-locations: file:D:\\ck-file
   servlet:
     multipart:
       enabled: true
