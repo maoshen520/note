@@ -1,0 +1,19 @@
+
+官网下载MySQL8.0地址   https://cdn.mysql.com/archives/mysql-installer/mysql-installer-community-8.0.33.0.msi
+安装教程    https://blog.csdn.net/qq_39754590/article/details/127583468
+
+
+authentication plugin 'caching_sha2_password' connot be loaded  ==》错误1045（28000）：无法加载身份验证插件“caching_sha2_password”
+1、登录Mysql
+mysql -u root -p
+
+2、修改'root'@'localhost'用户的密码规则和密码
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'abc123';
+
+3、#刷新权限
+FLUSH PRIVILEGES;
+
+
+
+导出数据库sql
+mysqldump -u root -p密码 数据库名称 >d:\zhike.sql(路径及文件名)

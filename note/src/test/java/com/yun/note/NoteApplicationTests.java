@@ -34,8 +34,8 @@ class NoteApplicationTests {
 //				true  //是否为html格式解析
 //		);
 
-		String emailRegisterVC = mailservice.getEmailRegisterVC("535179400@qq.com");
-		System.out.println(emailRegisterVC);
+//		String emailRegisterVC = mailservice.getEmailRegisterVC("535179400@qq.com");
+//		System.out.println(emailRegisterVC);
 
 	}
 
