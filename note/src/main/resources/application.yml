@@ -33,4 +33,4 @@ mybatis-flex:
   mapper-locations: mapper/**/*Mapper.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  type-aliases-package: com.zhike.note.pojo
+  type-aliases-package: com.yun.note.pojo
