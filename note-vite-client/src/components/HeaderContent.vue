@@ -2,7 +2,7 @@
 
 <template>
     <div class="clearfix">
-        <div class="fl header-title">知科笔记</div>
+        <div class="fl header-title">布谷鸟笔记</div>
         <div class="fr" style="padding: 16px 0px;margin-right: 40px;">
             <el-space :size="20">
 
@@ -161,6 +161,7 @@
 <style lang="less" scoped>
     .header-title {
         line-height: 64px;
+        font-weight: 600;
     }
 
     /deep/.el-badge__content.is-fixed.is-dot {

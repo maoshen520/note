@@ -44,10 +44,11 @@ export default defineConfig({
 		proxy:{
 			'/note-serve':{
 				target:'http://127.0.0.1:18081',  //代理地址
+				// target:'http://47.107.58.184:18081',  //代理地址
 				changeOrigin: true,  // 允许跨域
 				rewrite: path => path.replace(/^\/note-serve/,'')
 			}
 		},
-		host:'0.0.0.0',
+		// host:'0.0.0.0',
 	}
 })
