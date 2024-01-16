@@ -24,7 +24,7 @@ public class UserLog {
     private String desc;  //描述
     private Date time; // 注册时间
     private String event;  //  事件码
-    @Column("user_id")
+    @Column("u_id")
     private Integer userId;   //日志所对应的用户编号
 
 }

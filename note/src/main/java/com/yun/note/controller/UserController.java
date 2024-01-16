@@ -104,6 +104,11 @@ public class UserController {
 
         //从redis中获取真实的验证码
         String vcTokenValue = redisTemplate.opsForValue().get(vcKey);
+        System.out.println(vcTokenValue);
+
+
+
+
         //判断验证码是否已经失效
         if(Validator.isEmpty(vcTokenValue)){
             return new ResponseData(false,"验证码已失效，请重新获取验证码", EventCode.VC_INVALID);

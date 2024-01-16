@@ -4,6 +4,9 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/zhike
     username: root
     password: 123456
+#    url: jdbc:mysql://47.107.58.184:3306/zhike
+#    username: zhike
+#    password: admin
   redis:
     host: 127.0.0.1
     port: 6379
