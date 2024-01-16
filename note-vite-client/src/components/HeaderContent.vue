@@ -107,7 +107,7 @@
     
     // 用户菜单点击回调
     const menuSelect = (type) => {
-        console.log(type)
+        // console.log(type)
         if(type === 'sign-out-login'){
             sigonOutLogin();
         }

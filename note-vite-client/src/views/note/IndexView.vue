@@ -127,7 +127,7 @@
 </template>
 
 <script setup>
-    import {ref} from 'vue';
+    import {ref,watch} from 'vue';
     import { useRouter } from 'vue-router';
     import {getUserToken,loginInvalid} from "@/utils/userLoginUtils.js";
     import {noteBaseRequest} from "@/request/note_request.js";
@@ -138,6 +138,33 @@
     import clickRightMenu from '@/components/note/ClickRightMenu.vue';
     import gsap from "gsap";
     import deleteRemindDialog from "@/components/remind/DeleteRemindDialog.vue";
+    import { useUserStore } from '@/stores/userStore';
+    import { storeToRefs } from 'pinia';
+
+    // 用户的共享资源
+	const userStore = useUserStore();
+	// 获取响应的token值
+	const {token, id:user_id} = storeToRefs(userStore);
+    // 重新登录----获取笔记列表
+    watch(
+        () => token.value,
+        newData => {
+            // 是否重新进行登录
+            if(newData !== null){
+                // 重新获取用户的笔记列表
+                getNoteList(true, false);
+
+                cardIndex.value = null;
+
+                // 判断编辑小记的窗口是否需要关闭 ==> 1.是编辑小记  2.当前用户和小记用户一致
+                // if(editThingRef.value.thingId != null && editThingRef.value.userId !== user_id.value){
+                //     editThingRef.value.dialogVisible = false;
+                // }
+
+            }
+        }
+    )
+
 
     const isLoad = ref(false);
 
@@ -164,7 +191,10 @@
     const notes = ref([]);   //小记列表
 
     // 卡片点击事件--激活
-    const cardClick = (id) => {
+    const cardClick = async (id) => {
+        //判断用户的登录状态
+        const userToken = await getUserToken();
+
         cardIndex.value = id;
         goEditNoteView(id);  //跳转至编辑路由
     }
@@ -291,8 +321,11 @@
     const noteId = ref(0);
     const noteTitle = ref('');
     const clickRightMenuRef = ref(null);
-    const clickRight = (e,id,top,title) => {
+    const clickRight = async (e,id,top,title) => {
         e.preventDefault()
+        //判断用户的登录状态
+        const userToken = await getUserToken();
+
         cardIndex.value = id;
         isTop.value = !!top;
         noteId.value = id;

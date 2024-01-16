@@ -17,6 +17,7 @@ import ckeditor5 from '@ckeditor/vite-plugin-ckeditor5' // 引入 ckeditor5 vite
 
 // https://vitejs.dev/config/
 export default defineConfig({
+	base: './',
 	//添加此段
 	resolve: {
 		alias: {
@@ -43,7 +44,8 @@ export default defineConfig({
 		port:'18080',  //端口号
 		proxy:{
 			'/note-serve':{
-				target:'http://127.0.0.1:18081',  //代理地址
+				// target:'http://127.0.0.1:18081',  //代理地址
+				target:'http://47.107.58.184:18081',  //代理地址
 				changeOrigin: true,  // 允许跨域
 				rewrite: path => path.replace(/^\/note-serve/,'')
 			}
