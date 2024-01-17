@@ -24,6 +24,7 @@ export const getUserToken =async () => {
         // 弹出登录窗口
         await changeLoginModalShowStatus(true);  
         throw "未登录";
+        // return "未登录";
     }else {
         return token;
     }

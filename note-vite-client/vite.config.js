@@ -17,7 +17,7 @@ import ckeditor5 from '@ckeditor/vite-plugin-ckeditor5' // 引入 ckeditor5 vite
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	base: './',
+	// base: './',
 	//添加此段
 	resolve: {
 		alias: {

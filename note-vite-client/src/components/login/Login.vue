@@ -61,6 +61,8 @@
     import { noteBaseRequest } from "@/request/note_request";
     import { useUserStore } from "@/stores/userStore.js"
     import {disabledBtn} from "@/utils/disabledBtn.js";
+    import serverRequest from "@/request";
+    import userApi from '@/request/api/userApi';
 
     // 自定义事件
     const emits = defineEmits(['changeStep','childCloseDialog']);
@@ -128,63 +130,105 @@
     };
 
     // 登录按钮
-    const loginBtn = (formEl) => {
+    const loginBtn = async (formEl) => {
         if (!formEl) return
-        formEl.validate( async (valid) => {
-            if (valid) {
-                // loginBtnDisabled.value = true;  
-                //禁用登录按钮
-                disabledBtn(loginBtnDisabled, true);
-                const { data: responseData } = await noteBaseRequest.post(
-                    '/user/login/email/password',
-                    {
-                        email: loginFormValue.value.email,
-                        password: loginFormValue.value.password
-                    }
-                ).catch(() => {
-                    ElMessage({
-                        message: '发送登录请求失败',
-                        type: 'error',
-                    })
-                    // setTimeout(() => {
-                    //     loginBtnDisabled.value = false;  //解除禁用登录按钮
-                    // },2000)
-                    disabledBtn(loginBtnDisabled, false, true, 2);
-                    throw '发送登录请求失败'
-                })
-                console.log(responseData)
 
-                if(responseData.success){
-                    // localStorage.setItem('userToken',responseData.data.userToken);
-                    emits('childCloseDialog');
-                    const user = responseData.data.user;
-                    setUserInfo(
-                        responseData.data.userToken,
-                        user.id,
-                        user.email,
-                        user.nickname,
-                        user.headPic,
-                        user.level,
-                        user.time
-                    );
-                    ElMessage({
-                        message: responseData.message,
-                        type: 'success'
-                    })
-                }else{
-                    ElMessage({
-                        message: responseData.message,
-                        type: 'error'
-                    })
-                }
-                // setTimeout(() => {
-                //     loginBtnDisabled.value = false;  //解除禁用登录按钮
-                // },2000)
-                disabledBtn(loginBtnDisabled, false, true, 2);
-            } else {
-                return false
-            }
+        await formEl.validate((valid) => {
+            if (!valid) throw "表单验证失败";
         }); 
+
+        //禁用登录按钮
+        disabledBtn(loginBtnDisabled, true);
+
+        // 获取请求api
+        let API = {...userApi.loginEmailPassword};
+
+        // 封装请求体中（data）的参数
+        API.data = {
+            email: loginFormValue.value.email,
+            password: loginFormValue.value.password
+        }
+
+        // 发送请求
+        await serverRequest(API).then(responseData => {
+        
+            if(!responseData) return;
+
+            emits('childCloseDialog');
+
+            const user = responseData.data.user;
+            setUserInfo(
+                responseData.data.userToken,
+                user.id,
+                user.email,
+                user.nickname,
+                user.headPic,
+                user.level,
+                user.time
+            );
+        })
+        // .catch(error => {
+
+        // })
+        //解除禁用登录按钮
+        disabledBtn(loginBtnDisabled, false, true, 2); 
+
+
+        // formEl.validate( async (valid) => {
+        //     if (valid) {
+        //         // loginBtnDisabled.value = true;  
+        //         //禁用登录按钮
+        //         disabledBtn(loginBtnDisabled, true);
+        //         const { data: responseData } = await noteBaseRequest.post(
+        //             '/user/login/email/password',
+        //             {
+        //                 email: loginFormValue.value.email,
+        //                 password: loginFormValue.value.password
+        //             }
+        //         ).catch(() => {
+        //             ElMessage({
+        //                 message: '发送登录请求失败',
+        //                 type: 'error',
+        //             })
+        //             // setTimeout(() => {
+        //             //     loginBtnDisabled.value = false;  //解除禁用登录按钮
+        //             // },2000)
+        //             disabledBtn(loginBtnDisabled, false, true, 2);
+        //             throw '发送登录请求失败'
+        //         })
+        //         console.log(responseData)
+
+        //         if(responseData.success){
+        //             // localStorage.setItem('userToken',responseData.data.userToken);
+        //             emits('childCloseDialog');
+        //             const user = responseData.data.user;
+        //             setUserInfo(
+        //                 responseData.data.userToken,
+        //                 user.id,
+        //                 user.email,
+        //                 user.nickname,
+        //                 user.headPic,
+        //                 user.level,
+        //                 user.time
+        //             );
+        //             ElMessage({
+        //                 message: responseData.message,
+        //                 type: 'success'
+        //             })
+        //         }else{
+        //             ElMessage({
+        //                 message: responseData.message,
+        //                 type: 'error'
+        //             })
+        //         }
+        //         // setTimeout(() => {
+        //         //     loginBtnDisabled.value = false;  //解除禁用登录按钮
+        //         // },2000)
+        //         disabledBtn(loginBtnDisabled, false, true, 2);
+        //     } else {
+        //         return false
+        //     }
+        // }); 
     };
 
     // 重置表单
