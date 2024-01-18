@@ -20,4 +20,19 @@ public class ResponseData<K> {
         this.message = message;
         this.code = code;
     }
+
+    //异常
+    public static ResponseData error(String message, String code) {
+        return new ResponseData(false, message, code);
+    }
+
+    //成功
+    public static ResponseData success(String message, String code) {
+        return new ResponseData(true, message, code);
+    }
+
+    //成功
+    public static <T> ResponseData success(String message, String code, T data) {
+        return new ResponseData(true, message, code, data);
+    }
 }

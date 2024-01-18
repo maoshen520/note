@@ -1,6 +1,7 @@
 package com.yun.note.controller;
 
 import cn.hutool.core.lang.Validator;
+import com.yun.note.annotation.UserToken;
 import com.yun.note.exception.ServiceException;
 import com.yun.note.pojo.Note;
 import com.yun.note.pojo.User;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 
@@ -33,18 +35,21 @@ public class NoteController {
 
     /**
      * 获取用户的笔记列表
-     * @param userToken
+     * @param
      * @return
      */
+    @UserToken
     @GetMapping("/list")
-    public ResponseData getUserNoteList(@RequestHeader String userToken){
+    public ResponseData getUserNoteList(HttpServletRequest request){
+        //从请求作用域中获取用户编号
+        Integer userTokenID =(Integer) request.getAttribute("userTokenID");
 
         try {
             // 判断登录参数
-            User user = TokenValidateUtil.validateUserToken(userToken, redisTemplate);
+           // User user = TokenValidateUtil.validateUserToken(userToken, redisTemplate);
 
             //调用用户的笔记列表业务
-            List<Note> notes = noteService.getUserNormalNotes(user.getId());
+            List<Note> notes = noteService.getUserNormalNotes(userTokenID);
             return new ResponseData(true,"获取成功", EventCode.SELECT_SUCCESS, notes);
         } catch (ServiceException e) {  //执行 List<Thing> things = thingService.getUserNormalThing(user.getId()); 业务报错，抛出ServiceException异常
             e.printStackTrace();
