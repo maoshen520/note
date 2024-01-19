@@ -11,6 +11,8 @@ import lombok.Getter;
  * */
 @Getter  //让外键可以获取
 public class ServiceException extends Exception{
+//优化异常处理后的
+//public class ServiceException extends RuntimeException{
     private final String code; // 业务状态码
 
 

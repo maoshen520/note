@@ -259,7 +259,7 @@
     }
 
     // 编辑器样式修改
-    .ck.ck-balloon-panel.ck-balloon-panel_visible{
+    .ck.ck-balloon-panel.ck-balloon-panel_visible.ck-powered-by-balloon{
         display: none ;
     }
     .ck.ck-editor__editable_inline{

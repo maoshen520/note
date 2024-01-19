@@ -65,6 +65,10 @@ public class UserController {
             return new ResponseData(false,e.getMessage(),e.getCode());
         }
 
+        //优化异常处理后的
+//        Map loginMap = (Map) userservice.loginByEmailAndPassword(email, password);
+//        return new ResponseData(true,"登录成功", EventCode.LOGIN_EMAIL_PASSWORD_SUCCESS,loginMap);
+
     }
 
 

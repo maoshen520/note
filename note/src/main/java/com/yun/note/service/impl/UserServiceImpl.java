@@ -107,7 +107,7 @@ public class UserServiceImpl implements IUserservice {
             throw new ServiceException("登录服务错误", EventCode.LOGIN_LOG_CREATE_FAIL);//抛出异常
         }
 
-        //将登录的信息存储在redis中,14天，并将查询登录用户的关键词返回给客户端
+        //将登录的信息存储在redis中,1天，并将查询登录用户的关键词返回给客户端
         //生成唯一的 key 值   通过hutool工具
         String userTokenKey ="userToken" + IdUtil.randomUUID();
 
@@ -115,7 +115,7 @@ public class UserServiceImpl implements IUserservice {
             redisTemplate.opsForValue().set(
                     userTokenKey,
                     JSONUtil.toJsonStr(user),
-                    14,
+                    1,
                     TimeUnit.DAYS
             );
         } catch (Exception e) {
