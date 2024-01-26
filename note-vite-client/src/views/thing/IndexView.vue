@@ -114,13 +114,16 @@
                 </template>
 
                 <!-- 删除提示框 -->
-                <deleteRemindDialog 
+                <deleteRemindDialog  
+                    @delect="deleteThing"
+                ></deleteRemindDialog>
+                <!-- <deleteRemindDialog 
                     :show="delectRemind.show"
                     :title="delectRemind.title"
                     :size="1"
                     @delect="deleteThing"
                     @cancel="delectRemind.show = false"
-                ></deleteRemindDialog>
+                ></deleteRemindDialog> -->
 
                 <!-- 编辑小记 -->
                 <ThingEdit 
@@ -143,6 +146,7 @@
     import deleteRemindDialog from "@/components/remind/DeleteRemindDialog.vue";
     import ThingEdit from "@/components/thing/ThingEdit.vue";
     import { useUserStore } from '@/stores/userStore';
+    import { useDeleteRemindDialogStore } from "@/stores/deleteRemindDialogStore"
     import { storeToRefs } from 'pinia';
 
     // 用户的共享资源
@@ -165,6 +169,14 @@
             }
         }
     )
+
+    // 删除提醒框共享资源
+    const deleteRemindDialogStore = useDeleteRemindDialogStore();
+    const {
+        show,  //是否显示删除提醒框
+    } = storeToRefs(deleteRemindDialogStore);
+    // 笔记页删除提醒框显示
+    const {showByThingPage} = deleteRemindDialogStore;
 
     const isLoad = ref(false);  //请求中显示骨架
 
@@ -199,7 +211,6 @@
             })
             throw '获取小记列表请求失败'
         })
-        console.log(responseData)
         if(responseData.success){
             things.value = [];
             things.value = responseData.data;  //小记列表
@@ -286,14 +297,17 @@
     // 显示删除提醒框
     const showDeleteRemindDialog = ({id, title}) => {
         delectRemind.value.id = id;  //将要删除的小记编号
-        delectRemind.value.title = title;
-        delectRemind.value.show = true;  //显示删除提醒框
+        // delectRemind.value.title = title;
+        // delectRemind.value.show = true;  //显示删除提醒框
+        showByThingPage(title)
     }   
 
     // 删除小记   --complete 是否彻底删除
     const deleteThing =async (complete) => {
 
-        delectRemind.value.show = false;  //关闭删除提醒框
+        //关闭删除提醒框
+        // delectRemind.value.show = false;  
+        show.value = false;  
 
         //判断用户的登录状态
         const userToken =  await getUserToken();
@@ -317,7 +331,6 @@
             })
             throw complete ? '彻底删除小记请求失败' : '删除小记请求失败';
         })
-        console.log(responseData)
         if(responseData.success){
             ElMessage({
                 message:responseData.message,

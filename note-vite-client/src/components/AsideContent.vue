@@ -186,10 +186,10 @@
             to:''
         },
         {
-            label:'删除',
+            label:'回收站',
             icon: Delete,
             iconSize: 26,
-            to:''
+            to:'/recycle'
         },
         
     ];

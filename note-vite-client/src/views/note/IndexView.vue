@@ -111,12 +111,15 @@
 
             <!-- 删除提示框 -->
             <deleteRemindDialog 
+                @delect="deleteNote"
+            ></deleteRemindDialog>  
+            <!-- <deleteRemindDialog 
                 :show="delectRemind.show"
                 :title="delectRemind.title"
                 :size="1"
-                @delect="deleteThing"
+                @delect="deleteNote"
                 @cancel="delectRemind.show = false"
-            ></deleteRemindDialog>  
+            ></deleteRemindDialog>   -->
         </div>
 
         <!-- 笔记编辑容器 -->
@@ -139,6 +142,7 @@
     import gsap from "gsap";
     import deleteRemindDialog from "@/components/remind/DeleteRemindDialog.vue";
     import { useUserStore } from '@/stores/userStore';
+    import { useDeleteRemindDialogStore } from "@/stores/deleteRemindDialogStore"
     import { storeToRefs } from 'pinia';
 
     // 用户的共享资源
@@ -164,7 +168,14 @@
             }
         }
     )
-
+    
+    // 删除提醒框共享资源
+    const deleteRemindDialogStore = useDeleteRemindDialogStore();
+    const {
+        show,  //是否显示提醒框
+    } = storeToRefs(deleteRemindDialogStore);
+    // 笔记页删除提醒框显示
+    const {showByNotePage} = deleteRemindDialogStore;
 
     const isLoad = ref(false);
 
@@ -294,7 +305,6 @@
             })
             throw '获取笔记列表请求失败'
         })
-        console.log(responseData)
         if(responseData.success){
             notes.value = [];
             notes.value = responseData.data;  //小记列表
@@ -325,7 +335,6 @@
         e.preventDefault()
         //判断用户的登录状态
         const userToken = await getUserToken();
-
         cardIndex.value = id;
         isTop.value = !!top;
         noteId.value = id;
@@ -333,7 +342,6 @@
         clickRightClientY.value = (e.clientY - 15) + 'px'
         clickRightClientX.value = (e.clientX + 50) + 'px'
         clickRightMenuRef.value.dropdownOpen();  //调用右键组件打开菜单
-        
     }
 
     // 删除提示框的对象
@@ -345,13 +353,16 @@
     // 显示删除提醒框
     const showDeleteRemindDialog = ({id, title}) => {
         delectRemind.value.id = id;  //将要删除的笔记编号
-        delectRemind.value.title = title;
-        delectRemind.value.show = true;  //显示删除提醒框
+        // delectRemind.value.title = title;
+        // delectRemind.value.show = true;  //显示删除提醒框
+        showByNotePage(title)
     }   
     // 删除笔记   --complete 是否彻底删除
-    const deleteThing =async (complete) => {
+    const deleteNote =async (complete) => {
 
-        delectRemind.value.show = false;  //关闭删除提醒框
+        //关闭删除提醒框
+        // delectRemind.value.show = false;  
+        show.value = false;  
 
         //判断用户的登录状态
         const userToken =  await getUserToken();

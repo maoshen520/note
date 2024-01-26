@@ -33,6 +33,6 @@ public class Note {
     private Integer top;  //是否置顶【0：不置顶  1：置顶】
     @Column(onInsertValue = "1")
     private Integer status; //状态【0：删除， -1彻底删除， 1：正常 】
-    @Column(onInsertValue = "2")
+    @Column(onInsertValue = "1")
     private Integer type;  //类别【1：笔记， 2：小记】
 }

@@ -32,7 +32,8 @@
                                 </div>
                                 <div>
                                     <el-button v-if="level === 1" size="small" type="success" color="#EAE9EA" style="color: #F74800;font-weight: bold;padding:0px 5px;height: 18px;background-color: #FFCCA9;margin-right: 20px;margin-top: -3px;" @click="changeLoginModalShowStatus(true)">会员</el-button>
-                                    <el-text class="mx-1" size="small" type="info">2023-12-12到期</el-text>
+                                    <el-text v-if="level === 1" class="mx-1" size="small" type="info">2023-12-12到期</el-text>
+                                    <el-button v-else="level !== 1" size="small" type="success" color="#EAE9EA" style="color: #F74800;font-weight: bold;padding:0px 5px;height: 18px;background-color: #FFCCA9;margin-right: 20px;margin-top: -3px;">购买会员</el-button>
                                 </div>
                                 
                             </el-col>

@@ -1,6 +1,7 @@
 import {createRouter, createWebHashHistory, createWebHistory} from "vue-router";
 import ThingIndexView from "@/views/thing/IndexView.vue";  //预加载
 import noteEditView from '@/views/note/NoteEdit.vue'
+import RecycleIndexView from '@/views/recycle/IndexView.vue'
 
 
 const routes = [
@@ -21,6 +22,11 @@ const routes = [
                 meta:{title:'笔记编辑页'}
             }
         ]
+    },
+    {
+        path:'/recycle',
+        component: RecycleIndexView,
+        meta:{title:'回收站'}
     },
 ]
 
