@@ -5,11 +5,11 @@ import com.mybatisflex.core.query.QueryWrapper;
 import com.yun.note.exception.ServiceException;
 import com.yun.note.exception.ServiceRollbackException;
 import com.yun.note.pojo.table.Tables;
-import com.yun.note.service.INoteThingLogService;
+import com.yun.note.service.IFileLogService;
 import com.yun.note.service.IThingService;
 import com.yun.note.util.code.EventCode;
 import com.yun.note.dao.IThingDao;
-import com.yun.note.pojo.NoteThingLog;
+import com.yun.note.pojo.FileLog;
 import com.yun.note.pojo.Thing;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class ThingServiceImpl implements IThingService {
 //    @Autowired
 //    private INoteThingLogDao noteThingLogDao;  //笔记小记日志的数据库接口
     @Autowired
-    private INoteThingLogService noteThingLogService;  //笔记小记的业务实现层
+    private IFileLogService fileLogService;  //笔记小记的业务实现层
 
     /**
      * 获取用户正常的小记
@@ -128,15 +128,23 @@ public class ThingServiceImpl implements IThingService {
 
         Date localTime = new Date();  //时间
         //新增小记日志记录（置顶业务）
-        NoteThingLog log = NoteThingLog.builder()
-                .time(localTime)
-                .event(eventSuccess)
-                .desc(desc)
-                .thingId(thingId)
-                .userId(userId)
-                .build();
+//        FileLog log = FileLog.builder()
+//                .time(localTime)
+//                .event(eventSuccess)
+//                .desc(desc)
+//                .thingId(thingId)
+//                .userId(userId)
+//                .build();
+        FileLog log = new FileLog(
+                localTime,
+                userId,
+                thingId,
+                2,
+                eventSuccess,
+                desc
+        );
 
-        noteThingLogService.addOneLog(log,true);
+        fileLogService.addOneLog(log,true);
 
     }
 
@@ -193,15 +201,23 @@ public class ThingServiceImpl implements IThingService {
         }
 
         //新增小记日志记录（删除业务）
-        NoteThingLog log = NoteThingLog.builder()
-                .time(localTime)
-                .event(eventSuccess)
-                .desc(desc)
-                .thingId(thingId)
-                .userId(userId)
-                .build();
+//        FileLog log = FileLog.builder()
+//                .time(localTime)
+//                .event(eventSuccess)
+//                .desc(desc)
+//                .thingId(thingId)
+//                .userId(userId)
+//                .build();
+        FileLog log = new FileLog(
+                localTime,
+                userId,
+                thingId,
+                2,
+                eventSuccess,
+                desc
+        );
 
-        noteThingLogService.addOneLog(log,true);
+        fileLogService.addOneLog(log,true);
     }
 
     /**
@@ -225,15 +241,23 @@ public class ThingServiceImpl implements IThingService {
         }
 
         //新增小记日志记录（新增业务）
-        NoteThingLog log = NoteThingLog.builder()
-                .time(thing.getUpdateTime())
-                .event(EventCode.THING_CREATE_SUCCESS)
-                .desc("新增小记")
-                .thingId(thing.getId())
-                .userId(thing.getUserId())
-                .build();
+//        FileLog log = FileLog.builder()
+//                .time(thing.getUpdateTime())
+//                .event(EventCode.THING_CREATE_SUCCESS)
+//                .desc("新增小记")
+//                .thingId(thing.getId())
+//                .userId(thing.getUserId())
+//                .build();
+        FileLog log = new FileLog(
+                thing.getUpdateTime(),
+                thing.getUserId(),
+                thing.getId(),
+                2,
+                EventCode.THING_CREATE_SUCCESS,
+                "新增小记"
+        );
 
-        noteThingLogService.addOneLog(log,true);
+        fileLogService.addOneLog(log,true);
     }
 
     /**
@@ -305,15 +329,23 @@ public class ThingServiceImpl implements IThingService {
         }
 
         //添加修改小记日记
-        NoteThingLog log = NoteThingLog.builder()
-                .time(thing.getUpdateTime())
-                .event(EventCode.THING_UPDATE_SUCCESS)
-                .desc("修改小记")
-                .thingId(thing.getId())
-                .userId(thing.getUserId())
-                .build();
+//        FileLog log = FileLog.builder()
+//                .time(thing.getUpdateTime())
+//                .event(EventCode.THING_UPDATE_SUCCESS)
+//                .desc("修改小记")
+//                .thingId(thing.getId())
+//                .userId(thing.getUserId())
+//                .build();
+        FileLog log = new FileLog(
+                thing.getUpdateTime(),
+                thing.getUserId(),
+                thing.getId(),
+                2,
+                EventCode.THING_UPDATE_SUCCESS,
+                "修改小记"
+        );
 
-        noteThingLogService.addOneLog(log,true);
+        fileLogService.addOneLog(log,true);
 
     }
 

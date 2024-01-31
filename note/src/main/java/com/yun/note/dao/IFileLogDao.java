@@ -1,7 +1,7 @@
 package com.yun.note.dao;
 
 import com.mybatisflex.core.BaseMapper;
-import com.yun.note.pojo.NoteThingLog;
+import com.yun.note.pojo.FileLog;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 //注解？为何要写
 @Mapper
 @Repository
-public interface INoteThingLogDao extends BaseMapper<NoteThingLog> {
+public interface IFileLogDao extends BaseMapper<FileLog> {
 }

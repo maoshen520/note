@@ -77,6 +77,7 @@ public class EventCode {
     public static final String PARAM_NOTE_ID_WRONG = "P_016";  //笔记编号参数有误
     public static final String PARAM_NOTE_COMPLETE_WRONG = "P_017";  //删除参数有误（是否为彻底删除的参数）
     public static final String PARAM_NOTE_RECYCLE_BIN_WRONG = "P_018";  //删除参数有误（是否为回收站操作的参数）
+    public static final String PARAM_WRONG = "P_019";  //参数有误
 
 
     //=========================sql  redis 的状态码  =========================

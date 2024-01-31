@@ -5,10 +5,10 @@ import com.yun.note.dao.INoteDao;
 import com.yun.note.exception.ServiceException;
 import com.yun.note.exception.ServiceRollbackException;
 import com.yun.note.pojo.table.Tables;
-import com.yun.note.service.INoteThingLogService;
+import com.yun.note.service.IFileLogService;
 import com.yun.note.util.code.EventCode;
 import com.yun.note.pojo.Note;
-import com.yun.note.pojo.NoteThingLog;
+import com.yun.note.pojo.FileLog;
 import com.yun.note.service.INoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class NoteServiceImpl implements INoteService {
     @Autowired
     private INoteDao noteDao;   //笔记的数据库接口
     @Autowired
-    private INoteThingLogService noteThingLogService;  //笔记小记日志的数据库接口
+    private IFileLogService fileLogService;  //笔记小记日志的数据库接口
 
 
 
@@ -108,14 +108,22 @@ public class NoteServiceImpl implements INoteService {
 
         Date localTime = new Date();  //时间
         //新增笔记日志记录（置顶业务）
-        NoteThingLog log = NoteThingLog.builder()
-                .time(localTime)
-                .event(eventSuccess)
-                .desc(desc)
-                .noteId(noteId)
-                .userId(userId)
-                .build();
-        noteThingLogService.addOneLog(log,true);
+//        FileLog log = FileLog.builder()
+//                .time(localTime)
+//                .event(eventSuccess)
+//                .desc(desc)
+//                .noteId(noteId)
+//                .userId(userId)
+//                .build();
+        FileLog log = new FileLog(
+                localTime,
+                userId,
+                noteId,
+                1,
+                eventSuccess,
+                desc
+        );
+        fileLogService.addOneLog(log,true);
     }
 
     /**
@@ -170,15 +178,23 @@ public class NoteServiceImpl implements INoteService {
         }
 
         //新增小记日志记录（删除业务）
-        NoteThingLog log = NoteThingLog.builder()
-                .time(localTime)
-                .event(eventSuccess)
-                .desc(desc)
-                .noteId(noteId)
-                .userId(userId)
-                .build();
+//        FileLog log = FileLog.builder()
+//                .time(localTime)
+//                .event(eventSuccess)
+//                .desc(desc)
+//                .noteId(noteId)
+//                .userId(userId)
+//                .build();
+        FileLog log = new FileLog(
+                localTime,
+                userId,
+                noteId,
+                1,
+                eventSuccess,
+                desc
+        );
 
-        noteThingLogService.addOneLog(log,true);
+        fileLogService.addOneLog(log,true);
     }
 
     /**
@@ -213,16 +229,24 @@ public class NoteServiceImpl implements INoteService {
         }
 
         //新增笔记的日志对象
-        NoteThingLog log = NoteThingLog.builder()
-                .noteId(note.getId())
-                .time(localTime)
-                .event(EventCode.NOTE_CREATE_SUCCESS)
-                .desc("新增笔记")
-                .userId(userId)
-                .build();
+//        FileLog log = FileLog.builder()
+//                .noteId(note.getId())
+//                .time(localTime)
+//                .event(EventCode.NOTE_CREATE_SUCCESS)
+//                .desc("新增笔记")
+//                .userId(userId)
+//                .build();
+        FileLog log = new FileLog(
+                localTime,
+                userId,
+                note.getId(),
+                1,
+                EventCode.NOTE_CREATE_SUCCESS,
+                "新增笔记"
+        );
 
         //新增笔记日志
-        noteThingLogService.addOneLog(log, true);
+        fileLogService.addOneLog(log, true);
 
         //返回新增笔记的编号
         return note.getId();
@@ -300,15 +324,22 @@ public class NoteServiceImpl implements INoteService {
         }
 
         //添加保存笔记的日志
-        NoteThingLog log = NoteThingLog.builder()
-                .userId(userId)
-                .desc("保存笔记")
-                .event(EventCode.NOTE_UPDATE_SUCCESS)
-                .time(localTime)
-                .noteId(noteId)
-                .build();
-
-        noteThingLogService.addOneLog(log, true);
+//        FileLog log = FileLog.builder()
+//                .userId(userId)
+//                .desc("保存笔记")
+//                .event(EventCode.NOTE_UPDATE_SUCCESS)
+//                .time(localTime)
+//                .noteId(noteId)
+//                .build();
+        FileLog log = new FileLog(
+                localTime,
+                userId,
+                noteId,
+                1,
+                EventCode.NOTE_UPDATE_SUCCESS,
+                "保存笔记"
+        );
+        fileLogService.addOneLog(log, true);
 
         return localTime;
     }

@@ -8,7 +8,7 @@
                 <h3>回收站</h3>
                 <el-space> 
                     <el-button color="#F97F4D" style="color: #fff;">批量恢复</el-button>
-                    <el-button type="danger">彻底批量删除</el-button>
+                    <el-button type="danger" @click="delectMoreClick()">彻底批量删除</el-button>
                 </el-space>
             </div>
         </el-card>
@@ -66,13 +66,25 @@
     // 删除提醒框显示(单个)
     const {showByDumpsterPageOneFile} = deleteRemindDialogStore;
 
+    const {showByDumpsterPageMoreFile} = deleteRemindDialogStore;
+
     const isLoad = ref(false);
     const filesData = ref([]);
 
-    const ultipleSelection = ref('');
+    const selectionData = ref([]);
+    // 多选
     const handleSelectionChange = (val) => {
-        ultipleSelection.value = val
-        console.log(ultipleSelection.value)
+        console.log(val)
+        selectionData.value = [];
+        if(val.length > 0){
+            for(let i=0; i<val.length; i++){
+                selectionData.value.push({
+                    id:val[0].id,
+                    type:val[0].type
+                })
+            }
+        }
+        console.log(selectionData.value)
     }
 
     // 获取列表数据
@@ -136,8 +148,10 @@
 
         if(delectRemindType.value == 1){  //笔记
             deleteNote(complete);
-        }else {  //小记
+        }else if(delectRemindType.value == 2) {  //小记
             deleteThing(complete);
+        }else{
+            batchDelect(complete);
         }
     }
 
@@ -204,6 +218,58 @@
                 type: 'error',
             })
             throw complete ? '彻底删除小记请求失败' : '删除小记请求失败';
+        })
+        if(responseData.success){
+            ElMessage({
+                message:responseData.message,
+                type: 'success',
+            });
+            getDataList();
+        }else{
+            ElMessage({
+                message: responseData.message,
+                type: 'error'
+            });
+            // 登录已失效
+            if(responseData.code == 'L_008'){
+                loginInvalid(true);
+            }
+        }
+    }
+
+
+    // 删除小记   --complete 是否彻底删除
+    const delectMoreClick = () => {
+        console.log(selectionData.value.length)
+        if(selectionData.value.length <= 0){
+            return false;
+        }
+        delectRemindType.value = null;
+        showByDumpsterPageMoreFile(selectionData.value.length)
+    }
+    const batchDelect =async (complete) => {
+        //判断用户的登录状态
+        const userToken =  await getUserToken();
+        const { data: responseData } = await noteBaseRequest.post(
+            "/file/delete-batch",
+            
+            {
+                complete,
+                dumpster:true,
+                files:selectionData.value
+            },
+            {
+                headers: {
+                    userToken:userToken
+                }
+            }
+               
+        ).catch(() => {
+            ElMessage({
+                message:'彻底删除请求失败',
+                type: 'error',
+            })
+            throw '彻底删除请求失败';
         })
         if(responseData.success){
             ElMessage({

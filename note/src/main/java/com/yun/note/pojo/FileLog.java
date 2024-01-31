@@ -13,12 +13,12 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 //笔记小记日志类---实体类
-@Table("z_note_thing_log")  //设置实体类与表名的映射关系
+@Table("z_file_log")  //设置实体类与表名的映射关系
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class NoteThingLog {
+public class FileLog {
     @Id(keyType = KeyType.Auto) //id注解
     private Integer id;  //日志编号
     private Date time; // 时间
@@ -26,8 +26,20 @@ public class NoteThingLog {
     private String desc;  //描述
     @Column("u_id")
     private Integer userId;   //日志所对应的用户编号
-    @Column("n_id")
-    private Integer noteId;   //日志所对应的笔记编号
-    @Column("t_id")
-    private Integer thingId;   //日志所对应的小记编号
+    @Column("f_id")
+    private Integer fileId;   //文件编号
+    @Column("f_type")
+    private Integer fileType;   //文件类型
+
+
+    public FileLog(Date time, Integer userId, Integer fileId, Integer fileType, String event, String desc) {
+        this.time = time;
+        this.userId = userId;
+        this.fileId = fileId;
+        this.fileType = fileType;
+        this.event = event;
+        this.desc = desc;
+    }
 }
+
+

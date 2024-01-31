@@ -105,7 +105,7 @@
         } else {
             // 没有删除按钮，有彻底删除按钮
             if(!delectBtn.value && completeDelectBtn.value){
-                return '你即将对' + size.value + '个文件，将无法恢复！';
+                return '你即将对' + size.value + '个文件删除，将无法恢复！';
             }
             return '删除多个文件提醒';
         }
