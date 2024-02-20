@@ -155,10 +155,8 @@ public class FileServiceImpl implements IFileService {
 
         //判断删除的个数是否正确
         if(count + num != files.size()){
-            throw new ServiceRollbackException(tdesc + "失败", EventCode.UPDATE_ERROR);
+            throw new ServiceRollbackException("批量删除失败", EventCode.UPDATE_ERROR);
         }
-
-
 
         //新增小记日志记录（删除业务）
 //        NoteThingLog log = NoteThingLog.builder()
@@ -172,5 +170,77 @@ public class FileServiceImpl implements IFileService {
 //        noteThingLogService.addOneLog(log,true);
 
         fileLogService.addMoreLog(logs, true);
+    }
+
+
+
+    /**
+     * 回收站单个恢复
+     *
+     * @param u_id 用户id
+     * @param id   小记或笔记id
+     * @param type 是小记还是笔记
+     * @throws ServiceException
+     */
+    @Override
+    public void restoreOne(int u_id, int id, int type) throws ServiceException {
+
+        QueryWrapper wrapper;
+        int count = 0;
+        Date localTime = new Date();
+        String desc = "恢复笔记";
+        String eventSuccess = EventCode.NOTE_RESTORE_SUCCESS;
+
+        if(type == 1){  //笔记
+            wrapper = QueryWrapper.create()
+                    .where(Tables.NOTE.ID.eq(id))
+                    .and(Tables.NOTE.USER_ID.eq(u_id));
+
+            //要修改的哪些字段  status
+            Note note = Note.builder()
+                    .status(1)
+                    .updateTime(localTime)
+                    .build();
+
+            try {
+                count = noteDao.updateByQuery(note, wrapper);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new ServiceException("恢复笔记失败", EventCode.UPDATE_EXCEPTION);
+            }
+        }else {
+            desc = "恢复小记";
+            eventSuccess = EventCode.THING_RESTORE_SUCCESS;
+
+            wrapper = QueryWrapper.create()
+                    .where(Tables.THING.ID.eq(id))
+                    .and(Tables.THING.USER_ID.eq(u_id));
+
+            //要修改的哪些字段  status
+            Thing thing = Thing.builder()
+                    .status(1)
+                    .updateTime(localTime)
+                    .build();
+
+            try {
+                count = thingDao.updateByQuery(thing, wrapper);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new ServiceException("恢复小记失败", EventCode.UPDATE_EXCEPTION);
+            }
+
+        }
+
+
+        FileLog log = new FileLog(
+                localTime,
+                u_id,
+                id,
+                1,
+                eventSuccess,
+                desc
+        );
+
+        fileLogService.addOneLog(log,true);
     }
 }

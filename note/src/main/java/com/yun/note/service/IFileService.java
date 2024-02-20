@@ -21,6 +21,14 @@ public interface IFileService {
      */
     void deleteBatch(boolean complete, boolean dumpster, int u_id, List<FileDumpster> files) throws ServiceException;
 
+    /**
+     * 回收站单个恢复
+     * @param u_id  用户id
+     * @param id  小记或笔记id
+     * @param type  是小记还是笔记
+     * @throws ServiceException
+     */
+    void restoreOne(int u_id, int id, int type) throws ServiceException;
 
 
 }

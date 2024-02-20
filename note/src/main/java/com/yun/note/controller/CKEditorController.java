@@ -38,8 +38,13 @@ public class CKEditorController {
             return responseData;
         }
 
+        // 获取当前工程的根路径
+        String rootPath = System.getProperty("user.dir");
+        System.out.println(rootPath);
+
         //上传到服务器哪个磁盘文件夹下
-        String fileMkdirsPath = "D:" + File.separator + "ck-file" + File.separator + "image";
+//        String fileMkdirsPath = "D:" + File.separator + "ck-file" + File.separator + "image";
+        String fileMkdirsPath = rootPath + File.separator + "ck-file" + File.separator + "image";
 
         //上传到哪个磁盘文件下的虚拟路径地址
         String urlImagePath =

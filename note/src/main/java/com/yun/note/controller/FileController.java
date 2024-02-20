@@ -1,18 +1,25 @@
 package com.yun.note.controller;
 
 
+import cn.hutool.core.lang.Validator;
 import com.yun.note.annotation.UserToken;
 import com.yun.note.exception.ServiceException;
+import com.yun.note.pojo.User;
 import com.yun.note.service.IFileService;
 import com.yun.note.service.INoteService;
 import com.yun.note.service.IThingService;
+import com.yun.note.util.code.EventCode;
+import com.yun.note.util.response.ResponseData;
+import com.yun.note.util.validate.TokenValidateUtil;
 import com.yun.note.util.vo.DeleteFileVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.validation.annotation.Validated;
 
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,6 +37,9 @@ public class FileController {
     @Autowired
     private IFileService fileService;
 
+    @Autowired
+    private StringRedisTemplate redisTemplate; // redis对象
+
     /**
      * 批量删除文件
      * @param fileVo  删除文件删除对象
@@ -37,16 +47,40 @@ public class FileController {
      */
     @UserToken
     @PostMapping("/delete-batch")
-    public void deleteMoreFile(@RequestBody @Validated DeleteFileVo fileVo, HttpServletRequest request) throws ServiceException {
+    public ResponseData deleteMoreFile(@RequestBody @Validated DeleteFileVo fileVo, HttpServletRequest request) throws ServiceException {
+        try {
+            //从请求作用域中获取用户编号
+            Integer userTokenID =(Integer) request.getAttribute("userTokenID");
 
-        //从请求作用域中获取用户编号
-        Integer userTokenID =(Integer) request.getAttribute("userTokenID");
+            //调用批量删除文件业务
+            fileService.deleteBatch(fileVo.getComplete(), fileVo.getDumpster(), userTokenID, fileVo.getFiles());
 
-        //调用批量删除文件业务
-        fileService.deleteBatch(fileVo.getComplete(), fileVo.getDumpster(), userTokenID, fileVo.getFiles());
-
+            return new ResponseData(true,"彻底删除成功", EventCode.UPDATE_SUCCESS);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return new ResponseData(false,e.getMessage(), e.getCode());
+        }
 
     }
 
+    @PostMapping("/restoreOne")
+    public ResponseData restoreOne(int id, int type, @RequestHeader String userToken) {
+
+        try {
+            // 判断登录参数
+            User user = TokenValidateUtil.validateUserToken(userToken, redisTemplate);
+
+            //验证编辑编号参数
+            if (Validator.isEmpty(id)) return new ResponseData(false, "编号参数有误", EventCode.PARAM_WRONG);
+
+            if (Validator.isEmpty(type)) return new ResponseData(false, "类型参数有误", EventCode.PARAM_WRONG);
+
+            fileService.restoreOne( user.getId(), id, type);
+            return new ResponseData(true,"恢复成功", type == 1 ? EventCode.NOTE_RESTORE_SUCCESS : EventCode.THING_RESTORE_SUCCESS);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return new ResponseData(false,e.getMessage(), e.getCode());
+        }
+    }
 
 }

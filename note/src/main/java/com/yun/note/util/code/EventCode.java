@@ -80,6 +80,7 @@ public class EventCode {
     public static final String PARAM_WRONG = "P_019";  //参数有误
 
 
+
     //=========================sql  redis 的状态码  =========================
     public static final String REDIS_SERVE_ERROR = "R_001";  //redis服务
 
@@ -96,6 +97,7 @@ public class EventCode {
     public static final String THING_CREATE_EXCEPTION = "T_008";  //新增小记异常
     public static final String THING_CREATE_FAILED = "T_009";  //新增小记失败
     public static final String THING_UPDATE_SUCCESS = "T_010";  //修改小记成功
+    public static final String THING_RESTORE_SUCCESS = "T_011";  //恢复小记成功
 
     //=========================sql  日志 的状态码  =========================
     public static final String LOG_CREATE_EXCEPTION = "TOG_001";  //日志新增异常
@@ -112,4 +114,5 @@ public class EventCode {
     public static final String NOTE_CREATE_EXCEPTION = "N_008";  //新增笔记异常
     public static final String NOTE_CREATE_FAILED = "N_009";  //新增笔记失败
     public static final String NOTE_UPDATE_SUCCESS = "N_010";  //修改笔记成功
+    public static final String NOTE_RESTORE_SUCCESS = "N_011";  //恢复笔记成功
 }

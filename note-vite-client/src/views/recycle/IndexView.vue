@@ -7,7 +7,7 @@
             <div class="card-header">
                 <h3>回收站</h3>
                 <el-space> 
-                    <el-button color="#F97F4D" style="color: #fff;">批量恢复</el-button>
+                    <!-- <el-button color="#F97F4D" style="color: #fff;">批量恢复</el-button> -->
                     <el-button type="danger" @click="delectMoreClick()">彻底批量删除</el-button>
                 </el-space>
             </div>
@@ -35,7 +35,7 @@
                 </el-table-column>
                 <el-table-column label="操作" min-width="20%">
                     <template #default="scope">
-                        <el-button color="#F97F4D" style="color: #fff;" size="small">恢复</el-button>
+                        <el-button color="#F97F4D" style="color: #fff;" size="small" @click="restoreOne(scope.row.id,scope.row.type)">恢复</el-button>
                         <el-button type="danger" size="small" @click="delectOneClick(scope.row.id,scope.row.title,scope.row.type)">彻底删除</el-button>
                     </template>
                 </el-table-column>
@@ -57,6 +57,8 @@
     import { useDeleteRemindDialogStore } from "@/stores/deleteRemindDialogStore"
     import { storeToRefs } from 'pinia';
     import deleteRemindDialog from "@/components/remind/DeleteRemindDialog.vue";
+    import serverRequest from "@/request";
+    import fileApi from '@/request/api/fileApi';
 
     // 删除提醒框共享资源
     const deleteRemindDialogStore = useDeleteRemindDialogStore();
@@ -71,6 +73,7 @@
     const isLoad = ref(false);
     const filesData = ref([]);
 
+    // 多选表格的数组数据
     const selectionData = ref([]);
     // 多选
     const handleSelectionChange = (val) => {
@@ -79,8 +82,8 @@
         if(val.length > 0){
             for(let i=0; i<val.length; i++){
                 selectionData.value.push({
-                    id:val[0].id,
-                    type:val[0].type
+                    id:val[i].id,
+                    type:val[i].type
                 })
             }
         }
@@ -110,7 +113,6 @@
             })
             throw '获取回收站列表请求失败'
         })
-        console.log(responseData)
         if(responseData.success){
             filesData.value = [];
             filesData.value = responseData.data;  //小记列表
@@ -131,7 +133,7 @@
 
     // 单个删除id
     const delectRemindId = ref(null);
-    //类型
+    //类型  --1：笔记   2：小记
     const delectRemindType = ref(null);
     // 单个删除
     const delectOneClick = (id,title,type) => {
@@ -141,7 +143,7 @@
         showByDumpsterPageOneFile(fileName, type)
     }
 
-    // 删除方法  --complete 是否彻底删除
+    //点击删除提示框中彻底删除按钮   --complete 是否彻底删除
     const deletedumpster = (complete) => {
         //关闭删除提醒框
         show.value = false;
@@ -238,25 +240,93 @@
     }
 
 
-    // 删除小记   --complete 是否彻底删除
+    // 彻底批量删除按钮点击事件
     const delectMoreClick = () => {
-        console.log(selectionData.value.length)
         if(selectionData.value.length <= 0){
             return false;
         }
         delectRemindType.value = null;
         showByDumpsterPageMoreFile(selectionData.value.length)
     }
+
+    // 批量删除请求方法
     const batchDelect =async (complete) => {
+
+        // 获取请求api
+        let API = {...fileApi.deleteBatch};
+
+        // 封装请求体中（data）的参数
+        API.data = {
+            complete,
+            dumpster:true,
+            files:selectionData.value 
+        }
+
+        // 发送请求
+        await serverRequest(API).then(responseData => {
+            if(!responseData) return;
+
+            getDataList();
+
+        })
+        .catch(error => {
+            ElMessage({
+                message:'彻底删除请求失败',
+                type: 'error',
+            })
+        })
+
         //判断用户的登录状态
+        // const userToken =  await getUserToken();
+        // const { data: responseData } = await noteBaseRequest.post(
+        //     "/file/delete-batch",
+            
+        //     {   
+        //         complete,
+        //         dumpster:true,
+        //         files:selectionData.value 
+        //     },
+        //     {
+        //         headers: {
+        //             userToken:userToken
+        //         }
+        //     }
+               
+        // ).catch(() => {
+        //     ElMessage({
+        //         message:'彻底删除请求失败',
+        //         type: 'error',
+        //     })
+        //     throw '彻底删除请求失败';
+        // })
+        // if(responseData.success){
+        //     ElMessage({
+        //         message:responseData.message,
+        //         type: 'success',
+        //     });
+        //     getDataList();
+        // }else{
+        //     ElMessage({
+        //         message: responseData.message,
+        //         type: 'error'
+        //     });
+        //     // 登录已失效
+        //     if(responseData.code == 'L_008'){
+        //         loginInvalid(true);
+        //     }
+        // }
+    }
+
+    // 单个恢复小记或笔记
+    const restoreOne =async (id,type) => {
+
+        // 判断用户的登录状态
         const userToken =  await getUserToken();
         const { data: responseData } = await noteBaseRequest.post(
-            "/file/delete-batch",
-            
-            {
-                complete,
-                dumpster:true,
-                files:selectionData.value
+            "/file/restoreOne",
+            {   
+                id,
+                type
             },
             {
                 headers: {
@@ -266,10 +336,10 @@
                
         ).catch(() => {
             ElMessage({
-                message:'彻底删除请求失败',
+                message:'恢复请求失败',
                 type: 'error',
             })
-            throw '彻底删除请求失败';
+            throw '恢复请求失败';
         })
         if(responseData.success){
             ElMessage({
