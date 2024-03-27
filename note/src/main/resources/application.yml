@@ -1,12 +1,12 @@
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://127.0.0.1:3306/zhike
-    username: root
-    password: 123456
-#    url: jdbc:mysql://47.107.58.184:3306/zhike
-#    username: zhike
-#    password: admin
+#    url: jdbc:mysql://127.0.0.1:3306/zhike
+#    username: root
+#    password: 123456
+    url: jdbc:mysql://47.107.58.184:3306/zhike
+    username: zhike
+    password: admin
   redis:
     host: 127.0.0.1
     port: 6379
@@ -24,7 +24,8 @@ spring:
     time-zone: GMT+8
   web:
     resources:
-      static-locations: file:D:\\ck-file
+#      static-locations: file:D:\\ck-file
+      static-locations: file:./ck-file
   servlet:
     multipart:
       enabled: true

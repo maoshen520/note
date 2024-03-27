@@ -40,21 +40,31 @@ public class CKEditorController {
 
         // 获取当前工程的根路径
         String rootPath = System.getProperty("user.dir");
-        System.out.println(rootPath);
 
         //上传到服务器哪个磁盘文件夹下
 //        String fileMkdirsPath = "D:" + File.separator + "ck-file" + File.separator + "image";
         String fileMkdirsPath = rootPath + File.separator + "ck-file" + File.separator + "image";
 
         //上传到哪个磁盘文件下的虚拟路径地址
+//        String urlImagePath =
+//                request.getScheme() +
+//                    "://" +
+//                    request.getLocalAddr() +
+//                    ":" +
+//                    request.getServerPort() +
+//                    request.getContextPath() +
+//                    "/image/";
+        //http://172.19.8.164:18081/image/1711523218761.jpg
+
         String urlImagePath =
                 request.getScheme() +
-                    "://" +
-                    request.getLocalAddr() +
-                    ":" +
-                    request.getServerPort() +
-                    request.getContextPath() +
-                    "/image/";
+                "://" +
+                request.getServerName() +
+                ":" +
+                request.getServerPort() +
+                request.getContextPath() +
+                "/image/";//存储路径
+        //http://47.107.58.184:18081/image/1711523218761.jpg
 
         //获取上传文件的名称
         String originalFileName = file.getOriginalFilename();
@@ -77,6 +87,7 @@ public class CKEditorController {
 
         //最终上传的文件
         File localFile = new File(fileMkdirsPath + File.separator + fileName);
+
         try {
             file.transferTo(localFile);
         } catch (IOException e) {
