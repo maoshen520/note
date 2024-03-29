@@ -159,7 +159,7 @@
             label:'最近操作',
             icon: Clock,
             iconSize: 26,
-            to:''
+            to:'/recently'
         },
         {
             label:'笔记',

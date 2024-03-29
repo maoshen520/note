@@ -18,6 +18,18 @@ body,html{
 	overflow: hidden;
 }
 
+.viewVue-box{
+	margin: 20px;
+	background-color: #fff;
+	height:calc(100% - 40px);
+	border-radius: 5px;
+}
+.viewVue-box-nobg{
+	margin: 20px;
+	height:calc(100% - 40px);
+	border-radius: 5px;
+}
+
 /* 橙色背景按钮 */
 /* .orange-bg-btn{
 	color: #F74800;

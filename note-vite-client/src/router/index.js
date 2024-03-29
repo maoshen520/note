@@ -6,6 +6,15 @@ import RecycleIndexView from '@/views/recycle/IndexView.vue'
 
 const routes = [
     {
+        path:'/',
+        redirect:'/recently'  //重定向
+    },
+    {
+        path:'/recently',
+        component: () => import('@/views/recently/IndexView.vue'),  //按需加载
+        meta:{title:'最近操作页'},
+    },
+    {
         path:'/thing',
         component: ThingIndexView,
         meta:{title:'小记页'}
