@@ -214,15 +214,7 @@
     import {noteBaseRequest} from "@/request/note_request.js";
 
     import bus from 'vue3-eventbus'; 
-    // 监听知否触发了新建小记事件----显示新建小记窗口
-    bus.on('newCreateThing', () => {
-        showDialogVisible(null);
-    })
 
-    // 组件卸载之前，移除监听事件
-    onBeforeUnmount(() => {
-        bus.off('newCreateThing');  //停止监听新建小记事件
-    })
 
     //自定义事件
     const emits = defineEmits(['save']) 
@@ -351,7 +343,7 @@
     const showDialogVisible = id => {
         dialogVisible.value = true;
         loading.value = true;
-        if(id === null){
+        if(!id){
             loading.value = false;
         }else{
             formValue.value.id = id;
@@ -491,7 +483,15 @@
     }
 
     // 将哪些函数导出
-    defineExpose({showDialogVisible, dialogVisible, userId, thingId})
+    defineExpose({showDialogVisible, dialogVisible, userId, thingId});
+
+    // 监听知否触发了新建小记事件----显示新建小记窗口
+    bus.on('newCreateThing', showDialogVisible);
+
+    // 组件卸载之前，移除监听事件
+    onBeforeUnmount(() => {
+        bus.off('newCreateThing', showDialogVisible);  //停止监听新建小记事件
+    })
 
 </script>
 

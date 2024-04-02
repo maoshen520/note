@@ -5,7 +5,7 @@
         <el-card class="carousel-box card-list-box">
             <el-carousel height="140px">
                 <el-carousel-item v-for="item in carouselImg" :key="item.id">
-                    <img class="carousel-img" :src="item.url" alt="" srcset="">
+                    <img class="carousel-img" :src="item.src" alt="" srcset="" @click="toHref(item.to, () => {}, (!item.offsite && !item.newTab), item.newTab)">
                 </el-carousel-item>
             </el-carousel>
         </el-card>
@@ -15,7 +15,8 @@
             <el-button 
                 text 
                 :bg="true"
-                style="font-size: 16px;padding: 8px 15px;color:#F74800 " 
+                style="font-size: 16px;padding: 8px 15px;color:#F74800 "
+                @click="createMain('note')" 
             >
                 <el-icon :size="20" color="#F74800" style="margin-right: 5px;">
                     <Document/>
@@ -39,12 +40,12 @@
                 text 
                 :bg="true"
                 style="font-size: 16px;padding: 8px 15px;color: red;"  
-                @click="createMain('thing')"
+                
             >
                 <el-icon :size="20" color="red" style="margin-right: 5px;">
                     <Umbrella/>
                 </el-icon>
-                模板中心
+                商城中心
             </el-button>
         </el-card>
 
@@ -114,6 +115,7 @@
 
     import {useRouter} from 'vue-router';
     import bus from 'vue3-eventbus';
+    import {toHref} from '@/router/go';  //路径跳转函数
     
     const router = useRouter();
 
@@ -121,25 +123,42 @@
     let carouselImg = ref([
         {
             id:1,
-            url: carouselImg1
+            src: carouselImg1,
+            to: 'https://www.baidu.com',  //
+            offsite: true, // 是否为站外地址  
+            newTab: true   // 站内地址是否采用新标签页
         },
         {
             id:2,
-            url: carouselImg2
+            src: carouselImg2,
+            to: '/thing',  //
+            offsite: false, // 是否为站外地址
+            newTab: false   // 站内地址是否采用新标签页
         },
         {
             id:3,
-            url: carouselImg3
+            src: carouselImg3,
+            to: '/note',  //
+            offsite: false, // 是否为站外地址
+            newTab: true   // 站内地址是否采用新标签页
         },
     ])
 
     const createMain = (type) => {
+
+        // 跳转到小记页面
         if(type == 'thing'){
             router.push('/thing').then(() => {
-                bus.emit('newCreateThing');
+                bus.emit('newCreateThing');  //小记新增组件有事件中心监听
+            })
+        }else if(type == 'note'){     
+            router.push('/note').then(() => {
+                bus.emit('newCreateNote');
             })
         }
     }
+
+
 
 
 </script>
@@ -163,7 +182,7 @@
     
     .carousel-img{
         width:100%;
-        // height:140px;
+        height:140px;
         object-fit: cover;
     }
 

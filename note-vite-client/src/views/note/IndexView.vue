@@ -130,7 +130,7 @@
 </template>
 
 <script setup>
-    import {ref,watch} from 'vue';
+    import {ref,watch,onBeforeUnmount} from 'vue';
     import { useRouter } from 'vue-router';
     import {getUserToken,loginInvalid} from "@/utils/userLoginUtils.js";
     import {noteBaseRequest} from "@/request/note_request.js";
@@ -144,6 +144,9 @@
     import { useUserStore } from '@/stores/userStore';
     import { useDeleteRemindDialogStore } from "@/stores/deleteRemindDialogStore"
     import { storeToRefs } from 'pinia';
+
+    import bus from 'vue3-eventbus'; 
+
 
     // 用户的共享资源
 	const userStore = useUserStore();
@@ -391,6 +394,7 @@
                 message:responseData.message,
                 type: 'success',
             });
+            router.push('/note');  
             getNoteList(false, true); 
         }else{
             ElMessage({
@@ -461,6 +465,13 @@
             return false;
         }
     }
+
+    // 监听知否触发了新建笔记事件
+    bus.on('newCreateNote', createNote)
+    // 组件卸载之前，移除监听事件
+    onBeforeUnmount(() => {
+        bus.off('newCreateNote', createNote);  //停止监听新建笔记事件
+    })
 
 
 </script>

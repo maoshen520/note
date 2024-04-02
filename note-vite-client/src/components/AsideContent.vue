@@ -21,7 +21,7 @@
 
                 <div>
                     <div>
-                        <el-button text style="font-size: 16px;padding: 8px 15px;">
+                        <el-button text style="font-size: 16px;padding: 8px 15px;" @click="createMain('note')">
                             <el-icon :size="20" color="#F74800" style="margin-right: 5px;">
                                 <Document/>
                             </el-icon>
@@ -144,6 +144,10 @@
         if(type == 'thing'){
             router.push('/thing').then(() => {
                 bus.emit('newCreateThing');
+            })
+        }else{
+            router.push('/note').then(() => {
+                bus.emit('newCreateNote');
             })
         }
     }

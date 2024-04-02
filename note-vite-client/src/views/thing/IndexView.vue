@@ -125,7 +125,7 @@
                     @cancel="delectRemind.show = false"
                 ></deleteRemindDialog> -->
 
-                <!-- 编辑小记 -->
+                <!--新增 / 编辑小记 -->
                 <ThingEdit 
                     ref="editThingRef"
                     @save="getThingList"
