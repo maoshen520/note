@@ -22,10 +22,6 @@ spring:
     default-property-inclusion: non_null
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
-  web:
-    resources:
-#      static-locations: file:D:\\ck-file
-      static-locations: file:./ck-file
   servlet:
     multipart:
       enabled: true
@@ -37,4 +33,8 @@ mybatis-flex:
   mapper-locations: mapper/**/*Mapper.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  web:
+    resources:
+#      static-locations: file:D:\\ck-file
+      static-locations: file:./ck-file
   type-aliases-package: com.yun.note.pojo

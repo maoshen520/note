@@ -50,12 +50,12 @@
         </el-card>
 
         <!-- 最近记录 -->
-        <el-card class="card-list-box">
+        <el-card class="card-list-box file-list-box">
             <template #header>
                 <el-text size="large" style="font-weight: bold;color: #000;font-size: 18px;">最近记录</el-text>
             </template>
 
-            <el-space direction="vertical" alignment="start" :size="10"  v-for="item in 10" :key="item">
+            <el-space style="width: calc(100% / 7);max-width: 246px;min-width: 200px;"  direction="vertical" alignment="start" :size="10"  v-for="item in 10" :key="item">
                 <el-space wrap :size="10" >
                     <el-card class="box-card-list" shadow="never" style="border-bottom: 0px;">
                         <div class="card-list-title">
@@ -165,7 +165,6 @@
 
 <style lang="less" scoped>
     .card-list-box{
-        
         border-radius: 5px;
         margin-bottom: 20px;
         box-shadow: none;
@@ -186,14 +185,29 @@
         object-fit: cover;
     }
 
+    .file-list-box{
+        height: calc(100% - 140px - 72px - 40px);
+        min-height: 300px;
+    }
+
+    /deep/.file-list-box>.el-card__body{
+        height: calc(100% - 61px - 60px);
+        overflow: hidden;
+        overflow-y: auto;
+    }
+
     .box-card-list{
         border: none;
         background-color: #F2F6F7;
         /deep/.el-card__body{
             padding: 10px;
+            // height: calc(100% - 61px);
+            // overflow-y: auto;
         }
+        // width: calc(100% / 7);
         .card-list-title{
-            width: 216px;
+            
+            // width: 216px;
             font-size: 14px;
             // font-weight: 600;
             // overflow: hidden;
