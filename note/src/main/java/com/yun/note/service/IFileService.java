@@ -2,6 +2,7 @@ package com.yun.note.service;
 
 import com.yun.note.exception.ServiceException;
 import com.yun.note.pojo.FileDumpster;
+import com.yun.note.pojo.FileRecentlyUse;
 
 import java.util.List;
 
@@ -30,5 +31,12 @@ public interface IFileService {
      */
     void restoreOne(int u_id, int id, int type) throws ServiceException;
 
+
+    /**
+     * 获取用户最近使用的文件
+     * @param u_id  用户编号
+     * @throws ServiceException  业务异常
+     */
+    List<FileRecentlyUse> getRecentlyUseFiles(int u_id) throws ServiceException;
 
 }

@@ -141,10 +141,10 @@
     import { Search} from '@element-plus/icons-vue';  //图标
     import {getUserToken,loginInvalid} from "@/utils/userLoginUtils.js";
     import {noteBaseRequest} from "@/request/note_request.js";
-    import ThingCard from "@/components/thing/ThingCard.vue";
+    import ThingCard from "@/components/thing/ThingCard.vue";  //小记卡片
+    import ThingEdit from "@/components/thing/ThingEdit.vue";  //小记新增 / 编辑 弹框
+    import deleteRemindDialog from "@/components/remind/DeleteRemindDialog.vue";  //删除弹框
     import gsap from "gsap";
-    import deleteRemindDialog from "@/components/remind/DeleteRemindDialog.vue";
-    import ThingEdit from "@/components/thing/ThingEdit.vue";
     import { useUserStore } from '@/stores/userStore';
     import { useDeleteRemindDialogStore } from "@/stores/deleteRemindDialogStore"
     import { storeToRefs } from 'pinia';

@@ -1,14 +1,12 @@
 package com.yun.note.service.impl;
 
 import com.mybatisflex.core.query.QueryWrapper;
+import com.yun.note.dao.IFileRecentlyUseDao;
 import com.yun.note.dao.INoteDao;
 import com.yun.note.dao.IThingDao;
 import com.yun.note.exception.ServiceException;
 import com.yun.note.exception.ServiceRollbackException;
-import com.yun.note.pojo.FileDumpster;
-import com.yun.note.pojo.Note;
-import com.yun.note.pojo.FileLog;
-import com.yun.note.pojo.Thing;
+import com.yun.note.pojo.*;
 import com.yun.note.pojo.table.Tables;
 import com.yun.note.service.IFileService;
 import com.yun.note.service.IFileLogService;
@@ -20,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.yun.note.pojo.table.Tables.FILE_RECENTLY_USE;
+
 @Service
 public class FileServiceImpl implements IFileService {
 
@@ -29,7 +29,8 @@ public class FileServiceImpl implements IFileService {
     private IThingDao thingDao; //关于小记的数据库接口
     @Autowired
     private IFileLogService fileLogService;  //日志对象
-
+    @Autowired
+    private IFileRecentlyUseDao fileRecentlyUseDao;  //最近用户使用的数据库接口
 
 
 
@@ -242,5 +243,28 @@ public class FileServiceImpl implements IFileService {
         );
 
         fileLogService.addOneLog(log,true);
+    }
+
+    /**
+     * 获取用户最近使用的文件
+     *
+     * @param u_id 用户编号
+     * @throws ServiceException 业务异常
+     */
+    @Override
+    public List<FileRecentlyUse> getRecentlyUseFiles(int u_id) throws ServiceException {
+        // 查询的条件
+        QueryWrapper wrapper = QueryWrapper.create()
+                .select(FILE_RECENTLY_USE.ID, FILE_RECENTLY_USE.TITLE, FILE_RECENTLY_USE.UPDATE_TIME, FILE_RECENTLY_USE.TYPE)
+                .where(FILE_RECENTLY_USE.USER_ID.eq(u_id))
+                .orderBy(FILE_RECENTLY_USE.UPDATE_TIME.desc());
+
+        try {
+            return fileRecentlyUseDao.selectListByQuery(wrapper);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServiceException("获取最近操作文件失败", EventCode.SELECT_ERROR);
+        }
+
     }
 }

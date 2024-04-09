@@ -178,7 +178,6 @@
             disabledBtn(topBtnDisabled, false, true, 1);
             throw isTop ? '置顶小记请求失败' : '取消置顶小记请求失败';
         })
-        console.log(responseData)
         if(responseData.success){
             // things.value = responseData.data;  //小记列表
             ElMessage({

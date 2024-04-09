@@ -4,6 +4,8 @@ package com.yun.note.controller;
 import cn.hutool.core.lang.Validator;
 import com.yun.note.annotation.UserToken;
 import com.yun.note.exception.ServiceException;
+import com.yun.note.pojo.FileRecentlyUse;
+import com.yun.note.pojo.Thing;
 import com.yun.note.pojo.User;
 import com.yun.note.service.IFileService;
 import com.yun.note.service.INoteService;
@@ -81,6 +83,27 @@ public class FileController {
             e.printStackTrace();
             return new ResponseData(false,e.getMessage(), e.getCode());
         }
+    }
+
+
+    /**
+     * 获取用户最近使用的文件
+     * @param request
+     */
+    @UserToken
+    @GetMapping("/recently-use")
+    public ResponseData getFileRecentlyUse(HttpServletRequest request) throws ServiceException {
+        try {
+            //从请求作用域中获取用户编号
+            Integer userTokenID =(Integer) request.getAttribute("userTokenID");
+
+            List<FileRecentlyUse> recentlyUses = fileService.getRecentlyUseFiles(userTokenID);
+            return new ResponseData(true,"获取成功", EventCode.SELECT_SUCCESS, recentlyUses);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return new ResponseData(false,e.getMessage(), e.getCode());
+        }
+
     }
 
 }

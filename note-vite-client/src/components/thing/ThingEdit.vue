@@ -460,7 +460,6 @@
             dialogVisible.value = false;   //关闭弹窗
             throw '获取小记请求失败'
         })
-        console.log(responseData)
         if(responseData.success){
             loading.value = false;
             const editThing = responseData.data;
